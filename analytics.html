@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics — Contentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@1,9..144,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+:root{
+  --bg:#080b12; --s1:#0d1120; --s2:#111626; --s3:#161c2e; --s4:#1c2236; --s5:#222840;
+  --b1:#1e2438; --b2:#252c42; --b3:#2e3650;
+  --hi:#eef0ff; --text:#bbbfd8; --lo:#6068a0; --xs:#3c4468;
+  --accent:#6c8ef5; --accent-hi:#8ba4ff;
+  --green:#34d399; --yellow:#fbbf24; --red:#f87171;
+  --rose:#f472b6; --violet:#a78bfa; --sky:#60a5fa; --teal:#2dd4bf; --orange:#fb923c;
+  --r:10px; --r-sm:6px; --r-lg:14px;
+}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s5);border-radius:2px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;background:rgba(8,11,18,.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(–b1);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:30px;height:30px;background:linear-gradient(135deg,var(–accent),#9b6dff);border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(108,142,245,.35)}
+.brand-mark svg{width:15px;height:15px}
+.brand-name{font-size:15px;font-weight:700;color:var(–hi);letter-spacing:-.02em}
+.nav-links{display:flex;align-items:center;background:var(–s3);border:1px solid var(–b1);border-radius:8px;padding:3px;gap:1px}
+.nav-link{padding:5px 14px;border-radius:6px;font-size:12.5px;font-weight:500;color:var(–lo);cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none;display:flex;align-items:center;gap:5px}
+.nav-link:hover{color:var(–text)}.nav-link.active{background:var(–s5);color:var(–hi)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(–accent),var(–violet));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;cursor:pointer}
+
+/* CONTROLS */
+.controls{background:var(–s1);border-bottom:1px solid var(–b1);padding:11px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.preset-group{display:flex;gap:3px}
+.preset-btn{padding:5px 13px;border-radius:5px;border:1px solid var(–b1);background:var(–s3);color:var(–lo);font-size:11.5px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.preset-btn:hover{color:var(–text)}.preset-btn.active{background:rgba(108,142,245,.1);border-color:rgba(108,142,245,.3);color:var(–accent-hi);font-weight:600}
+.date-sep{font-size:12px;color:var(–xs)}
+.date-input{background:var(–s3);border:1px solid var(–b1);border-radius:5px;color:var(–text);font-family:‘JetBrains Mono’,monospace;font-size:11.5px;padding:5px 11px;outline:none;cursor:pointer;transition:border-color .15s}
+.date-input:focus{border-color:rgba(108,142,245,.4)}
+.controls-right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.net-filter{display:flex;gap:3px}
+.net-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:5px;border:1px solid var(–b1);background:var(–s3);color:var(–lo);font-size:11.5px;font-weight:500;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.net-btn:hover{color:var(–text)}.net-btn.active{color:var(–hi);border-color:var(–b3);background:var(–s4)}
+.net-dot{width:6px;height:6px;border-radius:50%}
+.btn-refresh{display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:5px;border:1px solid var(–b2);background:var(–s4);color:var(–lo);font-size:11.5px;cursor:pointer;transition:all .15s;font-family:inherit}
+.btn-refresh:hover{color:var(–text)}.btn-refresh.spinning svg{animation:spin .6s linear infinite}
+
+/* SHELL */
+.shell{max-width:1400px;margin:0 auto;padding:24px 28px 80px}
+
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:var(–s2);border:1px solid var(–b1);border-radius:var(–r-lg);padding:22px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s;animation:fadeUp .4s ease both;cursor:default}
+.kpi:nth-child(1){animation-delay:.04s}.kpi:nth-child(2){animation-delay:.08s}.kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.16s}
+.kpi:hover{border-color:var(–b3);transform:translateY(-2px)}
+.kpi-glow{position:absolute;top:-20px;right:-20px;width:100px;height:100px;border-radius:50%;opacity:.15;filter:blur(28px)}
+.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px;position:relative}
+.kpi-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px}
+.kpi-badge{display:flex;align-items:center;gap:3px;font-family:‘JetBrains Mono’,monospace;font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:20px}
+.badge-up{background:rgba(52,211,153,.1);color:var(–green)}.badge-down{background:rgba(248,113,113,.1);color:var(–red)}.badge-neu{background:rgba(96,104,160,.1);color:var(–lo)}
+.kpi-val{font-family:‘JetBrains Mono’,monospace;font-size:28px;font-weight:500;color:var(–hi);letter-spacing:-.02em;line-height:1;margin-bottom:5px;position:relative}
+.kpi-label{font-size:12px;color:var(–lo);font-weight:500;position:relative}
+.kpi-spark{height:34px;margin-top:14px;position:relative}
+.kpi-spark canvas{display:block}
+
+/* CHARTS */
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+.charts-row-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.chart-card{background:var(–s2);border:1px solid var(–b1);border-radius:var(–r-lg);padding:22px;position:relative;animation:fadeUp .45s ease both}
+.chart-card:nth-child(1){animation-delay:.2s}.chart-card:nth-child(2){animation-delay:.24s}
+.chart-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;gap:12px}
+.chart-title{font-size:14px;font-weight:600;color:var(–hi);letter-spacing:-.01em}
+.chart-sub{font-size:11px;color:var(–lo);margin-top:2px}
+.chart-legend{display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(–lo)}
+.legend-dot{width:8px;height:8px;border-radius:2px}
+.chart-wrap{position:relative}
+.chart-wrap canvas{display:block}
+
+/* TABLE */
+.table-card{background:var(–s2);border:1px solid var(–b1);border-radius:var(–r-lg);padding:22px;animation:fadeUp .5s ease .28s both}
+.table-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.table-wrap{overflow-x:auto}
+.table-wrap::-webkit-scrollbar{height:3px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead tr{border-bottom:1px solid var(–b2)}
+th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(–xs);padding:8px 12px;white-space:nowrap}
+th:first-child{padding-left:4px}th:last-child{text-align:right;padding-right:4px}
+td{padding:12px 12px;border-bottom:1px solid rgba(30,36,56,.5);vertical-align:middle}
+td:first-child{padding-left:4px}td:last-child{text-align:right;padding-right:4px}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .1s}tbody tr:hover td{background:rgba(255,255,255,.015)}
+.rank-num{width:22px;height:22px;border-radius:6px;background:rgba(108,142,245,.1);color:var(–accent);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.post-cell{display:flex;align-items:center;gap:10px;max-width:280px}
+.post-thumb{width:40px;height:40px;border-radius:8px;background:var(–s4);border:1px solid var(–b2);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.post-caption{font-size:12px;font-weight:500;color:var(–text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.post-date{font-family:‘JetBrains Mono’,monospace;font-size:10px;color:var(–xs);margin-top:1px}
+.net-tag{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+.nt-ig{background:rgba(232,81,138,.12);color:#e8518a}.nt-tt{background:rgba(167,139,250,.12);color:var(–violet)}.nt-fb{background:rgba(74,133,232,.12);color:var(–sky)}.nt-li{background:rgba(52,196,154,.12);color:var(–teal)}
+.metric-val{font-family:‘JetBrains Mono’,monospace;font-size:12.5px;color:var(–hi);font-weight:500}
+.eng-wrap{display:flex;align-items:center;gap:8px}
+.eng-track{width:72px;height:3px;background:var(–s4);border-radius:2px;overflow:hidden}
+.eng-fill{height:100%;border-radius:2px;background:var(–green)}
+.trend-up{color:var(–green);font-size:10.5px;font-weight:600;font-family:‘JetBrains Mono’,monospace}
+.trend-down{color:var(–red);font-size:10.5px;font-weight:600;font-family:‘JetBrains Mono’,monospace}
+
+/* SELECT */
+select{background:var(–s4);border:1px solid var(–b2);border-radius:var(–r-sm);color:var(–text);font-size:11.5px;padding:5px 10px;font-family:inherit;outline:none;cursor:pointer}
+select option{background:var(–s3)}
+
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.charts-row,.charts-row-2{grid-template-columns:1fr}}
+</style>
+
+</head>
+<body>
+<nav>
+  <div class="nav-brand">
+    <div class="brand-mark"><svg viewBox="0 0 15 15" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="10" height="10" rx="2.5"/><circle cx="7.5" cy="7.5" r="2"/><circle cx="11" cy="4" r=".8" fill="white" stroke="none"/></svg></div>
+    <div class="brand-name">Contentos</div>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" href="instagram-dashboard.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="2.5"/><circle cx="6.5" cy="6.5" r="2"/><circle cx="10" cy="3" r=".6" fill="currentColor" stroke="none"/></svg>Conteúdo</a>
+    <a class="nav-link active" href="analytics.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="1,10 4,6 7,8 12,2"/></svg>Analytics</a>
+    <a class="nav-link" href="calendar.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="2.5" width="10" height="9" rx="1.5"/><line x1="4" y1="1.5" x2="4" y2="3.5"/><line x1="9" y1="1.5" x2="9" y2="3.5"/><line x1="1.5" y1="5.5" x2="11.5" y2="5.5"/></svg>Calendário</a>
+    <a class="nav-link" href="competitors.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="9.5" cy="8" r="2.5"/></svg>Concorrentes</a>
+    <a class="nav-link" href="news.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/><line x1="4" y1="5" x2="9" y2="5"/><line x1="4" y1="7.5" x2="9" y2="7.5"/><line x1="4" y1="10" x2="7" y2="10"/></svg>Notícias</a>
+  </div>
+  <div class="nav-right"><div class="nav-avatar">N</div></div>
+</nav>
+
+<div class="controls">
+  <div class="preset-group">
+    <button class="preset-btn" onclick="setPreset(7,this)">7d</button>
+    <button class="preset-btn active" onclick="setPreset(30,this)">30d</button>
+    <button class="preset-btn" onclick="setPreset(90,this)">90d</button>
+  </div>
+  <span class="date-sep">ou</span>
+  <input type="date" class="date-input" id="date-from">
+  <span class="date-sep">→</span>
+  <input type="date" class="date-input" id="date-to">
+  <div class="controls-right">
+    <div class="net-filter">
+      <button class="net-btn active" data-net="all" onclick="setNet('all',this)">Todas</button>
+      <button class="net-btn" data-net="instagram" onclick="setNet('instagram',this)"><div class="net-dot" style="background:#e8518a"></div>Instagram</button>
+      <button class="net-btn" data-net="tiktok"    onclick="setNet('tiktok',this)"><div class="net-dot" style="background:var(--violet)"></div>TikTok</button>
+      <button class="net-btn" data-net="facebook"  onclick="setNet('facebook',this)"><div class="net-dot" style="background:var(--sky)"></div>Facebook</button>
+    </div>
+    <button class="btn-refresh" id="refresh-btn" onclick="refreshData()">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 2A5.5 5.5 0 1 0 11 6.5"/><polyline points="11,1 11,4 8,4"/></svg>
+      Atualizar
+    </button>
+  </div>
+</div>
+
+<div class="shell">
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-glow" style="background:#60a5fa"></div>
+      <div class="kpi-top">
+        <div class="kpi-icon" style="background:rgba(96,165,250,.1)">👁️</div>
+        <div class="kpi-badge badge-up" id="badge-imp">↑ +18.4%</div>
+      </div>
+      <div class="kpi-val" id="kpi-imp">42.1k</div>
+      <div class="kpi-label">Total de Impressões</div>
+      <div class="kpi-spark"><canvas id="spark-imp" height="34"></canvas></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-glow" style="background:#f472b6"></div>
+      <div class="kpi-top">
+        <div class="kpi-icon" style="background:rgba(244,114,182,.1)">💬</div>
+        <div class="kpi-badge badge-up" id="badge-eng">↑ +1.2pp</div>
+      </div>
+      <div class="kpi-val" id="kpi-eng">6.8%</div>
+      <div class="kpi-label">Taxa de Engajamento</div>
+      <div class="kpi-spark"><canvas id="spark-eng" height="34"></canvas></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-glow" style="background:#34d399"></div>
+      <div class="kpi-top">
+        <div class="kpi-icon" style="background:rgba(52,211,153,.1)">📈</div>
+        <div class="kpi-badge badge-up" id="badge-fol">↑ +9.1%</div>
+      </div>
+      <div class="kpi-val" id="kpi-fol">+1.3k</div>
+      <div class="kpi-label">Crescimento de Seguidores</div>
+      <div class="kpi-spark"><canvas id="spark-fol" height="34"></canvas></div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-glow" style="background:#fbbf24"></div>
+      <div class="kpi-top">
+        <div class="kpi-icon" style="background:rgba(251,191,36,.1)">🗂️</div>
+        <div class="kpi-badge badge-neu" id="badge-posts">24 posts</div>
+      </div>
+      <div class="kpi-val" id="kpi-posts">24</div>
+      <div class="kpi-label">Posts Publicados</div>
+      <div class="kpi-spark"><canvas id="spark-posts" height="34"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Impressions + Donut -->
+
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Impressões ao longo do tempo</div>
+          <div class="chart-sub">Alcance diário por plataforma</div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#e8518a"></div>Instagram</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--violet)"></div>TikTok</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--sky)"></div>Facebook</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:220px"><canvas id="chart-impressions"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Engajamento por rede</div>
+          <div class="chart-sub">Distribuição percentual</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:220px;display:flex;align-items:center;justify-content:center"><canvas id="chart-donut" style="max-height:220px"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Followers + Types -->
+
+  <div class="charts-row-2">
+    <div class="chart-card">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Crescimento de seguidores</div>
+          <div class="chart-sub">Novos seguidores por semana</div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Seguidores</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(52,211,153,.2)"></div>Meta</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chart-followers"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-head">
+        <div>
+          <div class="chart-title">Posts por formato</div>
+          <div class="chart-sub">Volume e engajamento médio</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="height:200px"><canvas id="chart-types"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Top Posts -->
+
+  <div class="table-card">
+    <div class="table-head">
+      <div>
+        <div class="chart-title">Posts com melhor desempenho</div>
+        <div class="chart-sub" style="margin-top:3px">Ordenado por impressões no período selecionado</div>
+      </div>
+      <select id="sort-posts" onchange="sortTop()">
+        <option value="impressions">Por Impressões</option>
+        <option value="engagement">Por Engajamento</option>
+        <option value="reach">Por Alcance</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Post</th><th>Rede</th><th>Tipo</th><th>Impressões</th><th>Alcance</th><th>Engajamento</th><th>Saves</th><th>vs. anterior</th></tr></thead>
+        <tbody id="posts-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color='#6068a0';Chart.defaults.borderColor='#1e2438';Chart.defaults.font.family="'JetBrains Mono',monospace";Chart.defaults.font.size=11;
+
+const TODAY=new Date();
+function fmtDate(d){return d.toISOString().split('T')[0]}
+function setDates(days){ const to=new Date(); const fr=new Date(); fr.setDate(fr.getDate()-days); document.getElementById('date-to').value=fmtDate(to); document.getElementById('date-from').value=fmtDate(fr); }
+function setPreset(d,el){ document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); setDates(d); }
+setDates(30);
+
+function setNet(n,el){ document.querySelectorAll('.net-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+
+const DAYS=30;
+const labels=Array.from({length:DAYS},(_,i)=>{ const d=new Date(TODAY); d.setDate(d.getDate()-(DAYS-1-i)); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}); });
+
+function S(base,vol,len=DAYS){ let v=base; return Array.from({length:len},()=>{ v=v*(1+(Math.random()-.46)*vol); return Math.max(0,Math.round(v)); }); }
+
+const igS=S(3800,0.18), tkS=S(5200,0.22), fbS=S(1500,0.14);
+const totS=igS.map((v,i)=>v+tkS[i]+fbS[i]);
+const engS=S(6.2,0.1), folS=S(44,0.2), postS=Array.from({length:DAYS},()=>Math.random()>.7?1:0);
+
+const sparkCfg=(data,color)=>({
+  type:'line', data:{ labels:data.map((_,i)=>i), datasets:[{ data, borderColor:color, borderWidth:1.5, fill:true, backgroundColor:ctx=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,34); g.addColorStop(0,color+'40'); g.addColorStop(1,color+'00'); return g;}, pointRadius:0, tension:.4 }] },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false},tooltip:{enabled:false}}, scales:{x:{display:false},y:{display:false}}, animation:{duration:600} }
+});
+
+Chart.getChart('spark-imp')?.destroy(); new Chart(document.getElementById('spark-imp'),sparkCfg(totS,'#60a5fa'));
+Chart.getChart('spark-eng')?.destroy(); new Chart(document.getElementById('spark-eng'),sparkCfg(engS,'#f472b6'));
+Chart.getChart('spark-fol')?.destroy(); new Chart(document.getElementById('spark-fol'),sparkCfg(folS,'#34d399'));
+Chart.getChart('spark-posts')?.destroy(); new Chart(document.getElementById('spark-posts'),sparkCfg(postS,'#fbbf24'));
+
+const TT={ callbacks:{ label:ctx=>` ${ctx.dataset.label||''}: ${fmtN(ctx.raw)}` }, backgroundColor:'#161c2e', borderColor:'#252c42', borderWidth:1, padding:10, titleColor:'#bbbfd8', bodyColor:'#6068a0' };
+
+new Chart(document.getElementById('chart-impressions'),{
+  type:'line',
+  data:{ labels, datasets:[
+    { label:'Instagram', data:igS, borderColor:'#e8518a', borderWidth:2, fill:true, backgroundColor:ctx=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,220);g.addColorStop(0,'#e8518a28');g.addColorStop(1,'#e8518a00');return g;}, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:'#e8518a', tension:.4 },
+    { label:'TikTok',    data:tkS, borderColor:'#a78bfa', borderWidth:2, fill:true, backgroundColor:ctx=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,220);g.addColorStop(0,'#a78bfa28');g.addColorStop(1,'#a78bfa00');return g;}, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:'#a78bfa', tension:.4 },
+    { label:'Facebook',  data:fbS, borderColor:'#60a5fa', borderWidth:2, fill:true, backgroundColor:ctx=>{const g=ctx.chart.ctx.createLinearGradient(0,0,0,220);g.addColorStop(0,'#60a5fa1e');g.addColorStop(1,'#60a5fa00');return g;}, pointRadius:0, pointHoverRadius:4, pointHoverBackgroundColor:'#60a5fa', tension:.4 },
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:'index',intersect:false}, plugins:{ legend:{display:false}, tooltip:TT }, scales:{ x:{grid:{display:false},ticks:{maxTicksLimit:8,color:'#3c4468'}}, y:{grid:{color:'rgba(30,36,56,.5)'},ticks:{color:'#3c4468',callback:v=>fmtN(v)}} }, animation:{duration:700} }
+});
+
+new Chart(document.getElementById('chart-donut'),{
+  type:'doughnut',
+  data:{ labels:['Instagram','TikTok','Facebook'], datasets:[{ data:[7.1,5.9,3.2], backgroundColor:['#e8518a','#a78bfa','#60a5fa'], borderColor:'#0d1120', borderWidth:3, hoverOffset:6 }] },
+  options:{ responsive:true, maintainAspectRatio:false, cutout:'68%', plugins:{ legend:{position:'bottom',labels:{color:'#6068a0',padding:14,font:{size:11},boxWidth:10,boxHeight:10}}, tooltip:{ backgroundColor:'#161c2e', borderColor:'#252c42', borderWidth:1, callbacks:{label:ctx=>` ${ctx.label}: ${ctx.raw.toFixed(1)}%`} } }, animation:{duration:800,animateRotate:true} }
+});
+
+const wkLabels=['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Sem 7','Sem 8'];
+const folData=[38,42,55,48,62,58,74,81];
+const goalData=folData.map(v=>Math.round(v*1.15));
+
+new Chart(document.getElementById('chart-followers'),{
+  type:'bar',
+  data:{ labels:wkLabels, datasets:[
+    { label:'Seguidores', data:folData, backgroundColor:'rgba(52,211,153,.75)', borderRadius:5, borderSkipped:false },
+    { label:'Meta', data:goalData, type:'line', borderColor:'rgba(52,211,153,.3)', borderWidth:1.5, borderDash:[4,4], pointRadius:0, fill:false, backgroundColor:'transparent' }
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false}, tooltip:{...TT,callbacks:{label:ctx=>` ${ctx.dataset.label}: +${ctx.raw}`}} }, scales:{ x:{grid:{display:false},ticks:{color:'#3c4468'}}, y:{grid:{color:'rgba(30,36,56,.5)'},ticks:{color:'#3c4468'}} }, animation:{duration:700} }
+});
+
+new Chart(document.getElementById('chart-types'),{
+  type:'bar',
+  data:{
+    labels:['Carrossel','Reels','Vídeo','Story','Estático'],
+    datasets:[
+      { label:'Posts', data:[9,6,4,3,2], backgroundColor:['rgba(167,139,250,.7)','rgba(244,114,182,.7)','rgba(45,212,191,.7)','rgba(251,191,36,.7)','rgba(96,165,250,.7)'], borderRadius:6, borderSkipped:false, yAxisID:'y' },
+      { label:'Eng. Médio %', data:[8.1,11.2,6.4,4.2,5.8], type:'line', borderColor:'#fbbf24', borderWidth:2, pointBackgroundColor:'#fbbf24', pointRadius:4, fill:false, tension:.3, yAxisID:'y2' }
+    ]
+  },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:true,position:'top',labels:{color:'#6068a0',font:{size:10},boxWidth:9,boxHeight:9,padding:12}}, tooltip:TT }, scales:{ x:{grid:{display:false},ticks:{color:'#3c4468'}}, y:{grid:{color:'rgba(30,36,56,.5)'},ticks:{color:'#3c4468'},title:{display:true,text:'Posts',color:'#3c4468',font:{size:10}}}, y2:{position:'right',grid:{display:false},ticks:{color:'#3c4468',callback:v=>v+'%'},title:{display:true,text:'Eng.',color:'#3c4468',font:{size:10}}} }, animation:{duration:700} }
+});
+
+const topPosts=[
+  { cap:'5 sinais de que você come por ansiedade — não por fome real 💛', net:'instagram', type:'Carrossel', imp:18420, reach:14200, eng:9.2, saves:847, prev:+2.1, emoji:'📷' },
+  { cap:'O que acontece no cérebro com dieta restritiva? 🧠', net:'tiktok', type:'Vídeo', imp:31800, reach:28100, eng:12.1, saves:1203, prev:+4.8, emoji:'🎵' },
+  { cap:'Por que você sabota quando está indo bem? ✨', net:'instagram', type:'Carrossel', imp:12300, reach:9800, eng:8.7, saves:623, prev:+1.3, emoji:'📷' },
+  { cap:'Mindful eating na prática: 3 técnicas que funcionam', net:'instagram', type:'Reels', imp:9870, reach:8100, eng:7.4, saves:412, prev:+0.8, emoji:'📷' },
+  { cap:'Cortisol e gordura abdominal — ciência que ninguém explicou 🔬', net:'facebook', type:'Vídeo', imp:7140, reach:5900, eng:4.8, saves:198, prev:-0.5, emoji:'👥' },
+  { cap:'Guia: fome emocional vs fome física (salva!) 📌', net:'instagram', type:'Carrossel', imp:6920, reach:5600, eng:8.1, saves:537, prev:+1.9, emoji:'📷' },
+  { cap:'A dieta que você não precisa fazer — serie completa', net:'tiktok', type:'Vídeo', imp:5810, reach:4700, eng:6.3, saves:289, prev:-1.2, emoji:'🎵' },
+];
+
+let topData=[...topPosts];
+function sortTop(){ const k=document.getElementById('sort-posts').value; const kmap={impressions:'imp',engagement:'eng',reach:'reach'}; topData=[...topPosts].sort((a,b)=>(b[kmap[k]]||0)-(a[kmap[k]]||0)); renderTop(); }
+function renderTop(){
+  const maxE=Math.max(...topData.map(p=>p.eng));
+  document.getElementById('posts-body').innerHTML=topData.map((p,i)=>{
+    const nc={instagram:'nt-ig',tiktok:'nt-tt',facebook:'nt-fb'}[p.net]||'nt-ig';
+    const up=p.prev>=0;
+    return `<tr>
+      <td><span class="rank-num">${i+1}</span></td>
+      <td><div class="post-cell"><div class="post-thumb">${p.emoji}</div><div><div class="post-caption">${p.cap}</div><div class="post-date">${p.type}</div></div></div></td>
+      <td><span class="net-tag ${nc}">${p.net}</span></td>
+      <td style="color:var(--lo);font-size:11.5px">${p.type}</td>
+      <td><span class="metric-val">${fmtN(p.imp)}</span></td>
+      <td><span class="metric-val">${fmtN(p.reach)}</span></td>
+      <td><div class="eng-wrap"><span class="metric-val" style="min-width:38px">${p.eng.toFixed(1)}%</span><div class="eng-track"><div class="eng-fill" style="width:${((p.eng/maxE)*100).toFixed(0)}%"></div></div></div></td>
+      <td><span class="metric-val">${fmtN(p.saves)}</span></td>
+      <td><span class="${up?'trend-up':'trend-down'}">${up?'↑ +':'↓ '}${Math.abs(p.prev).toFixed(1)}pp</span></td>
+    </tr>`;
+  }).join('');
+}
+renderTop();
+
+function fmtN(n){ if(n>=1e6) return (n/1e6).toFixed(1)+'M'; if(n>=1e3) return (n/1e3).toFixed(1)+'k'; return String(n); }
+function refreshData(){ const btn=document.getElementById('refresh-btn'); btn.classList.add('spinning'); setTimeout(()=>btn.classList.remove('spinning'),700); }
+</script>
+
+</body>
+</html>
