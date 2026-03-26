@@ -1,1 +1,841 @@
-# Marketing-pessoal
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestor de Conteúdo — Contentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { color-scheme: dark; }
+
+:root {
+–bg:       #080b12;
+–s1:       #0d1120;
+–s2:       #111626;
+–s3:       #161c2e;
+–s4:       #1c2236;
+–s5:       #222840;
+–b1:       #1e2438;
+–b2:       #252c42;
+–b3:       #2e3650;
+–hi:       #eef0ff;
+–text:     #bbbfd8;
+–lo:       #6068a0;
+–xs:       #3c4468;
+–accent:   #6c8ef5;
+–accent-hi:#8ba4ff;
+–green:    #34d399;
+–yellow:   #fbbf24;
+–red:      #f87171;
+–rose:     #f472b6;
+–violet:   #a78bfa;
+–sky:      #60a5fa;
+–teal:     #2dd4bf;
+–r: 10px; –r-sm: 6px; –r-lg: 14px;
+}
+
+body { font-family: ‘Plus Jakarta Sans’, system-ui, sans-serif; background: var(–bg); color: var(–text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(–s5); border-radius: 2px; }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes slideIn { from{opacity:0;transform:translateX(8px)} to{opacity:1;transform:translateX(0)} }
+
+/* ── NAV ────────────────────────────────────────────────────── */
+nav {
+position: sticky; top: 0; z-index: 200;
+height: 56px;
+background: rgba(8,11,18,.92);
+backdrop-filter: blur(20px) saturate(180%);
+border-bottom: 1px solid var(–b1);
+display: flex; align-items: center; justify-content: space-between;
+padding: 0 28px;
+}
+
+.nav-brand { display:flex; align-items:center; gap:10px; }
+
+.brand-mark {
+width: 30px; height: 30px;
+background: linear-gradient(135deg, var(–accent), #9b6dff);
+border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+box-shadow: 0 2px 12px rgba(108,142,245,.35);
+}
+
+.brand-mark svg { width:15px; height:15px; }
+
+.brand-name {
+font-size: 15px; font-weight: 700;
+color: var(–hi); letter-spacing: -0.02em;
+}
+
+.brand-sub {
+font-size: 11px; color: var(–lo);
+font-weight: 400; letter-spacing: 0;
+}
+
+.nav-links {
+display: flex; align-items: center;
+background: var(–s3); border: 1px solid var(–b1); border-radius: 8px; padding: 3px;
+gap: 1px;
+}
+
+.nav-link {
+padding: 5px 14px; border-radius: 6px;
+font-size: 12.5px; font-weight: 500;
+color: var(–lo); cursor: pointer;
+transition: all .15s; white-space: nowrap;
+text-decoration: none; display: flex; align-items: center; gap: 5px;
+}
+.nav-link:hover { color: var(–text); }
+.nav-link.active { background: var(–s5); color: var(–hi); }
+
+.nav-right { display:flex; align-items:center; gap:10px; }
+
+.nav-avatar {
+width: 32px; height: 32px; border-radius: 8px;
+background: linear-gradient(135deg,var(–accent),var(–violet));
+display: flex; align-items: center; justify-content: center;
+font-size: 13px; font-weight: 700; color: #fff;
+cursor: pointer;
+}
+
+/* ── BTN SYSTEM ──────────────────────────────────────────────── */
+.btn {
+display: inline-flex; align-items: center; gap: 6px;
+padding: 0 16px; height: 34px; border-radius: var(–r-sm);
+font-size: 13px; font-weight: 600; font-family: inherit;
+cursor: pointer; border: none; transition: all .15s; white-space: nowrap;
+letter-spacing: -0.01em;
+}
+.btn-primary { background: var(–accent); color: #fff; box-shadow: 0 2px 8px rgba(108,142,245,.3); }
+.btn-primary:hover { background: var(–accent-hi); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(108,142,245,.4); }
+.btn-primary:active { transform: translateY(0); }
+.btn-ghost { background: var(–s4); color: var(–text); border: 1px solid var(–b2); }
+.btn-ghost:hover { border-color: var(–b3); color: var(–hi); background: var(–s5); }
+.btn-ghost-sm { background: transparent; color: var(–lo); border: 1px solid var(–b2); height: 28px; padding: 0 10px; font-size: 11.5px; }
+.btn-ghost-sm:hover { color: var(–text); border-color: var(–b3); }
+.btn-danger { background: rgba(248,113,113,.1); color: var(–red); border: 1px solid rgba(248,113,113,.2); }
+.btn-danger:hover { background: rgba(248,113,113,.18); }
+
+/* ── FILTER PANEL ────────────────────────────────────────────── */
+.filter-panel {
+background: var(–s1);
+border-bottom: 1px solid var(–b1);
+padding: 12px 28px;
+display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+
+.filter-section { display: flex; align-items: center; gap: 6px; }
+
+.filter-label {
+font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+letter-spacing: .08em; color: var(–xs); white-space: nowrap; flex-shrink: 0;
+}
+
+.chip {
+display: inline-flex; align-items: center; gap: 5px;
+padding: 4px 11px; border-radius: 5px;
+font-size: 11.5px; font-weight: 500;
+cursor: pointer; user-select: none; white-space: nowrap;
+border: 1px solid var(–b1); background: var(–s3); color: var(–lo);
+transition: all .15s;
+}
+.chip:hover { color: var(–text); border-color: var(–b2); }
+.chip.on { background: rgba(108,142,245,.1); border-color: rgba(108,142,245,.3); color: var(–accent-hi); font-weight: 600; }
+.chip[data-status=“agendado”].on  { background: rgba(45,212,191,.08); border-color: rgba(45,212,191,.3); color: var(–teal); }
+.chip[data-status=“rascunho”].on  { background: rgba(251,191,36,.08); border-color: rgba(251,191,36,.3); color: var(–yellow); }
+.chip[data-status=“publicado”].on { background: rgba(52,211,153,.08); border-color: rgba(52,211,153,.3); color: var(–green); }
+.chip[data-status=“backlog”].on   { background: rgba(96,104,160,.1); border-color: rgba(96,104,160,.25); color: var(–lo); }
+.chip[data-type=“carrossel”].on { background: rgba(167,139,250,.08); border-color: rgba(167,139,250,.3); color: var(–violet); }
+.chip[data-type=“reels”].on     { background: rgba(244,114,182,.08); border-color: rgba(244,114,182,.3); color: var(–rose); }
+.chip[data-type=“story”].on     { background: rgba(251,191,36,.08);  border-color: rgba(251,191,36,.3);  color: var(–yellow); }
+.chip[data-type=“estatico”].on  { background: rgba(96,165,250,.08);  border-color: rgba(96,165,250,.3);  color: var(–sky); }
+.chip[data-type=“video”].on     { background: rgba(45,212,191,.08);  border-color: rgba(45,212,191,.3);  color: var(–teal); }
+
+.chip-count {
+font-family: ‘JetBrains Mono’, monospace; font-size: 9.5px;
+background: rgba(255,255,255,.06); padding: 0 5px; border-radius: 4px; color: inherit;
+}
+
+.active-pill {
+display: inline-flex; align-items: center; gap: 4px;
+padding: 3px 9px 3px 11px; border-radius: 20px;
+font-size: 11px; font-weight: 500;
+background: var(–s4); border: 1px solid var(–b2); color: var(–text);
+}
+.active-pill-x { background:none; border:none; color:var(–lo); cursor:pointer; font-size:12px; padding:0 2px; transition:color .12s; }
+.active-pill-x:hover { color: var(–red); }
+
+.search-field {
+display: flex; align-items: center; gap: 8px;
+background: var(–s3); border: 1px solid var(–b1); border-radius: var(–r-sm);
+padding: 7px 12px; flex: 1; max-width: 300px;
+transition: border-color .15s, box-shadow .15s;
+}
+.search-field:focus-within {
+border-color: rgba(108,142,245,.4);
+box-shadow: 0 0 0 3px rgba(108,142,245,.07);
+}
+.search-field svg { color: var(–xs); flex-shrink:0; }
+.search-field input { background:none; border:none; outline:none; color:var(–text); font-family:inherit; font-size:12.5px; width:100%; }
+.search-field input::placeholder { color: var(–xs); }
+
+.search-clear { background:none; border:none; color:var(–xs); cursor:pointer; font-size:13px; padding:0 2px; display:none; transition:color .12s; }
+.search-clear:hover { color: var(–text); }
+.search-clear.show { display:block; }
+
+.filter-divider { width:1px; height:18px; background:var(–b1); flex-shrink:0; }
+
+.sort-btn {
+display:flex; align-items:center; gap:5px;
+padding:5px 11px; border-radius:5px;
+border:1px solid var(–b1); background:var(–s3);
+color:var(–lo); font-size:11.5px; font-weight:500; font-family:inherit;
+cursor:pointer; transition:all .15s; white-space:nowrap;
+}
+.sort-btn:hover { color:var(–text); }
+.sort-btn.active { color:var(–accent-hi); border-color:rgba(108,142,245,.3); background:rgba(108,142,245,.07); }
+
+.active-pills-row { display:none; align-items:center; gap:6px; flex-wrap:wrap; }
+.active-pills-row.show { display:flex; }
+
+.clear-all-btn {
+display:none; align-items:center; gap:4px;
+padding:3px 10px; border-radius:5px;
+border:1px solid rgba(248,113,113,.2);
+background:rgba(248,113,113,.07); color:var(–red);
+font-size:11px; font-weight:500; cursor:pointer; transition:all .15s; font-family:inherit;
+}
+.clear-all-btn.show { display:flex; }
+.clear-all-btn:hover { background:rgba(248,113,113,.14); }
+
+.result-count { font-family:‘JetBrains Mono’,monospace; font-size:11px; color:var(–lo); margin-left:auto; flex-shrink:0; }
+.result-count strong { color:var(–text); }
+
+/* ── BOARD ───────────────────────────────────────────────────── */
+.shell { max-width:1440px; margin:0 auto; padding:24px 28px 80px; }
+
+.board { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; align-items:start; }
+
+/* ── COLUMN ──────────────────────────────────────────────────── */
+.col { display:flex; flex-direction:column; gap:8px; }
+
+.col-head {
+display:flex; align-items:center; justify-content:space-between;
+padding:0 2px; margin-bottom:6px;
+}
+
+.col-label { display:flex; align-items:center; gap:7px; }
+
+.col-pip { width:7px; height:7px; border-radius:50%; }
+.pip-teal    { background:var(–teal); box-shadow:0 0 6px rgba(45,212,191,.5); }
+.pip-yellow  { background:var(–yellow); box-shadow:0 0 6px rgba(251,191,36,.5); }
+.pip-green   { background:var(–green); box-shadow:0 0 6px rgba(52,211,153,.5); }
+.pip-neutral { background:var(–xs); }
+
+.col-title { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(–lo); }
+
+.col-badge {
+font-family:‘JetBrains Mono’,monospace; font-size:10.5px;
+color:var(–xs); background:var(–s3); border:1px solid var(–b1);
+padding:2px 8px; border-radius:20px;
+}
+
+/* ── CARD ────────────────────────────────────────────────────── */
+.card {
+background: var(–s2);
+border: 1px solid var(–b1);
+border-radius: var(–r);
+overflow: hidden;
+cursor: pointer;
+transition: border-color .2s, transform .2s, box-shadow .2s;
+animation: fadeUp .35s ease both;
+position: relative;
+}
+
+.card::before {
+content:’’;
+position:absolute; top:0; left:0; right:0;
+height:1px;
+background: linear-gradient(90deg, transparent, rgba(255,255,255,.04), transparent);
+}
+
+.card:hover {
+border-color: var(–b3);
+transform: translateY(-2px);
+box-shadow: 0 8px 32px rgba(0,0,0,.4), 0 0 0 1px rgba(255,255,255,.03);
+}
+
+.card-bar { height:2px; width:100%; }
+
+.card-inner { padding:14px 16px; }
+
+.card-top {
+display:flex; align-items:flex-start; justify-content:space-between;
+gap:8px; margin-bottom:10px;
+}
+
+.type-badge {
+display:inline-flex; align-items:center; gap:4px;
+font-size:10px; font-weight:700; padding:3px 8px; border-radius:4px;
+text-transform:uppercase; letter-spacing:.05em; flex-shrink:0;
+cursor: pointer; transition: filter .15s, transform .12s;
+}
+.type-badge:hover { filter:brightness(1.2); transform:scale(1.04); }
+.type-badge:active { transform:scale(.97); }
+.tb-carrossel { background:rgba(167,139,250,.12); color:var(–violet); }
+.tb-reels     { background:rgba(244,114,182,.12); color:var(–rose); }
+.tb-story     { background:rgba(251,191,36,.12);  color:var(–yellow); }
+.tb-estatico  { background:rgba(96,165,250,.12);  color:var(–sky); }
+.tb-video     { background:rgba(45,212,191,.12);  color:var(–teal); }
+
+.bar-carrossel { background:var(–violet); }
+.bar-reels     { background:var(–rose); }
+.bar-story     { background:var(–yellow); }
+.bar-estatico  { background:var(–sky); }
+.bar-video     { background:var(–teal); }
+
+.card-menu {
+background:none; border:none; color:var(–xs); cursor:pointer;
+padding:3px 5px; border-radius:4px; font-size:15px; line-height:1;
+transition:all .12s; flex-shrink:0;
+}
+.card-menu:hover { color:var(–text); background:var(–s4); }
+
+.card-caption {
+font-size:13px; line-height:1.55; color:var(–text); font-weight:400;
+margin-bottom:12px;
+display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+}
+
+mark.hl { background:rgba(251,191,36,.25); color:var(–yellow); border-radius:2px; padding:0 1px; font-style:normal; }
+
+.card-footer {
+display:flex; align-items:center; justify-content:space-between;
+padding-top:10px; border-top:1px solid var(–b1); gap:8px;
+}
+
+.card-date {
+font-family:‘JetBrains Mono’,monospace; font-size:10px; color:var(–xs);
+display:flex; align-items:center; gap:4px;
+}
+.card-date svg { width:10px; height:10px; opacity:.5; }
+
+.card-actions { display:flex; gap:4px; }
+.card-actions .btn { height:26px; padding:0 8px; font-size:10.5px; }
+
+/* ── EMPTY ───────────────────────────────────────────────────── */
+.col-empty {
+border:1px dashed var(–b2); border-radius:var(–r);
+padding:28px 16px; text-align:center;
+background: repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(255,255,255,.005) 8px,rgba(255,255,255,.005) 16px);
+}
+.col-empty-icon { font-size:20px; opacity:.3; margin-bottom:6px; }
+.col-empty-text { font-size:11.5px; color:var(–xs); line-height:1.5; }
+
+/* ── MODAL ───────────────────────────────────────────────────── */
+.modal-bg {
+position:fixed; inset:0; z-index:500;
+background:rgba(0,0,0,.7); backdrop-filter:blur(10px);
+display:flex; align-items:center; justify-content:center; padding:24px;
+opacity:0; pointer-events:none; transition:opacity .2s;
+}
+.modal-bg.open { opacity:1; pointer-events:all; }
+
+.modal {
+width:100%; max-width:500px;
+background:var(–s2); border:1px solid var(–b3);
+border-radius:var(–r-lg); overflow:hidden;
+box-shadow:0 32px 80px rgba(0,0,0,.65);
+transform:translateY(16px) scale(.97);
+transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-bg.open .modal { transform:translateY(0) scale(1); }
+
+.modal-header {
+padding:22px 24px 0;
+display:flex; align-items:flex-start; justify-content:space-between;
+border-bottom:0;
+}
+
+.modal-title { font-size:18px; font-weight:700; color:var(–hi); letter-spacing:-.02em; }
+.modal-sub { font-size:12px; color:var(–lo); margin-top:3px; }
+
+.modal-close {
+width:30px; height:30px; border-radius:7px;
+background:var(–s4); border:1px solid var(–b2); color:var(–lo);
+cursor:pointer; display:flex; align-items:center; justify-content:center;
+font-size:14px; transition:all .12s;
+}
+.modal-close:hover { color:var(–text); border-color:var(–b3); }
+
+.modal-body { padding:20px 24px; display:flex; flex-direction:column; gap:16px; }
+
+.field { display:flex; flex-direction:column; gap:6px; }
+
+.field label {
+font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(–lo);
+}
+
+.field input, .field select, .field textarea {
+background:var(–s4); border:1px solid var(–b2); border-radius:var(–r-sm);
+color:var(–text); font-family:inherit; font-size:13.5px; padding:10px 13px;
+outline:none; transition:border-color .15s, box-shadow .15s; width:100%; -webkit-appearance:none;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+border-color:rgba(108,142,245,.45);
+box-shadow:0 0 0 3px rgba(108,142,245,.08);
+}
+.field input::placeholder, .field textarea::placeholder { color:var(–xs); }
+.field textarea { resize:vertical; min-height:100px; line-height:1.55; }
+.field select option { background:var(–s4); color:var(–text); }
+
+.char-count { font-family:‘JetBrains Mono’,monospace; font-size:10px; color:var(–xs); text-align:right; margin-top:-2px; }
+.char-count.warn { color:var(–yellow); }
+.char-count.over { color:var(–red); }
+
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+.type-selector { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
+
+.type-opt {
+display:flex; flex-direction:column; align-items:center; gap:5px;
+padding:10px 6px; border:1px solid var(–b1); border-radius:var(–r-sm);
+background:var(–s3); cursor:pointer; transition:all .15s;
+font-size:10px; font-weight:700; color:var(–lo);
+text-transform:uppercase; letter-spacing:.04em; user-select:none;
+}
+.type-opt:hover { border-color:var(–b3); color:var(–text); }
+.type-opt.selected { border-color:rgba(108,142,245,.4); background:rgba(108,142,245,.08); color:var(–accent-hi); }
+.type-opt-icon { font-size:17px; }
+
+.modal-footer { padding:0 24px 22px; display:flex; gap:8px; justify-content:flex-end; }
+
+/* ── DETAIL MODAL ────────────────────────────────────────────── */
+.detail-meta { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.detail-meta-item { background:var(–s4); border:1px solid var(–b1); border-radius:var(–r-sm); padding:10px 12px; }
+.detail-meta-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(–xs); margin-bottom:4px; }
+.detail-meta-val { font-family:‘JetBrains Mono’,monospace; font-size:13px; color:var(–text); }
+.detail-caption { font-size:13.5px; line-height:1.65; color:var(–text); background:var(–s4); border:1px solid var(–b1); border-radius:var(–r-sm); padding:14px; white-space:pre-wrap; }
+.detail-move-row { display:flex; gap:6px; flex-wrap:wrap; }
+
+/* ── STATUS PILLS ────────────────────────────────────────────── */
+.status-pill { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:700; }
+.sp-teal    { background:rgba(45,212,191,.1); color:var(–teal); }
+.sp-yellow  { background:rgba(251,191,36,.1); color:var(–yellow); }
+.sp-green   { background:rgba(52,211,153,.1); color:var(–green); }
+.sp-neutral { background:rgba(96,104,160,.1); color:var(–lo); }
+.status-pip { width:5px; height:5px; border-radius:50%; }
+
+/* ── TOAST ───────────────────────────────────────────────────── */
+.toast {
+position:fixed; bottom:24px; left:50%;
+transform:translateX(-50%) translateY(60px);
+background:var(–s3); border:1px solid var(–b3);
+border-radius:30px; padding:10px 20px;
+font-size:12.5px; color:var(–text);
+display:flex; align-items:center; gap:8px;
+box-shadow:0 8px 32px rgba(0,0,0,.5);
+transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+z-index:600; white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+@media(max-width:900px) { .board { grid-template-columns:1fr 1fr; } }
+@media(max-width:560px) { .board { grid-template-columns:1fr; } nav { padding:0 16px; } .shell { padding:20px 16px 60px; } }
+</style>
+
+</head>
+<body>
+
+<!-- NAV -->
+
+<nav>
+  <div class="nav-brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 15 15" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2.5" y="2.5" width="10" height="10" rx="2.5"/>
+        <circle cx="7.5" cy="7.5" r="2"/>
+        <circle cx="11" cy="4" r=".8" fill="white" stroke="none"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand-name">Contentos</div>
+    </div>
+  </div>
+
+  <div class="nav-links">
+    <a class="nav-link active" href="instagram-dashboard.html">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="2.5"/><circle cx="6.5" cy="6.5" r="2"/><circle cx="10" cy="3" r=".6" fill="currentColor" stroke="none"/></svg>
+      Conteúdo
+    </a>
+    <a class="nav-link" href="analytics.html">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="1,10 4,6 7,8 12,2"/></svg>
+      Analytics
+    </a>
+    <a class="nav-link" href="calendar.html">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="2.5" width="10" height="9" rx="1.5"/><line x1="4" y1="1.5" x2="4" y2="3.5"/><line x1="9" y1="1.5" x2="9" y2="3.5"/><line x1="1.5" y1="5.5" x2="11.5" y2="5.5"/></svg>
+      Calendário
+    </a>
+    <a class="nav-link" href="competitors.html">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="9.5" cy="8" r="2.5"/></svg>
+      Concorrentes
+    </a>
+    <a class="nav-link" href="news.html">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/><line x1="4" y1="5" x2="9" y2="5"/><line x1="4" y1="7.5" x2="9" y2="7.5"/><line x1="4" y1="10" x2="7" y2="10"/></svg>
+      Notícias
+    </a>
+  </div>
+
+  <div class="nav-right">
+    <button class="btn btn-primary" onclick="openModal()">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5.5" y1="1" x2="5.5" y2="10"/><line x1="1" y1="5.5" x2="10" y2="5.5"/></svg>
+      Nova ideia
+    </button>
+    <div class="nav-avatar">N</div>
+  </div>
+</nav>
+
+<!-- FILTER PANEL -->
+
+<div class="filter-panel" id="filter-panel">
+  <!-- Row 1: Search + Sort + Clear -->
+  <div style="display:flex;align-items:center;gap:8px;width:100%;flex-wrap:wrap">
+    <div class="search-field">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><line x1="9" y1="9" x2="12" y2="12"/></svg>
+      <input type="text" id="search-input" placeholder="Buscar por legenda..." oninput="onSearch()" autocomplete="off">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+
+```
+<div class="filter-divider"></div>
+
+<div class="filter-section">
+  <span class="filter-label">Status</span>
+  <div style="display:flex;gap:4px" id="status-chips">
+    <div class="chip on" data-status="todos"     onclick="setStatus('todos',this)">Todos <span class="chip-count" id="cs-todos">0</span></div>
+    <div class="chip" data-status="agendado"     onclick="setStatus('agendado',this)">
+      <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="var(--teal)"/></svg>
+      Agendado <span class="chip-count" id="cs-agendado">0</span>
+    </div>
+    <div class="chip" data-status="rascunho"     onclick="setStatus('rascunho',this)">
+      <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="var(--yellow)"/></svg>
+      Rascunho <span class="chip-count" id="cs-rascunho">0</span>
+    </div>
+    <div class="chip" data-status="publicado"    onclick="setStatus('publicado',this)">
+      <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="var(--green)"/></svg>
+      Publicado <span class="chip-count" id="cs-publicado">0</span>
+    </div>
+    <div class="chip" data-status="backlog"      onclick="setStatus('backlog',this)">
+      <svg width="7" height="7" viewBox="0 0 7 7"><circle cx="3.5" cy="3.5" r="3.5" fill="var(--xs)"/></svg>
+      Backlog <span class="chip-count" id="cs-backlog">0</span>
+    </div>
+  </div>
+</div>
+
+<div class="filter-divider"></div>
+
+<div class="filter-section">
+  <span class="filter-label">Formato</span>
+  <div style="display:flex;gap:4px" id="type-chips">
+    <div class="chip on" data-type="todos"     onclick="setType('todos',this)">Todos <span class="chip-count" id="ct-todos">0</span></div>
+    <div class="chip" data-type="carrossel"    onclick="setType('carrossel',this)">🗂 Carrossel <span class="chip-count" id="ct-carrossel">0</span></div>
+    <div class="chip" data-type="reels"        onclick="setType('reels',this)">🎬 Reels <span class="chip-count" id="ct-reels">0</span></div>
+    <div class="chip" data-type="story"        onclick="setType('story',this)">⚡ Story <span class="chip-count" id="ct-story">0</span></div>
+    <div class="chip" data-type="estatico"     onclick="setType('estatico',this)">🖼 Estático <span class="chip-count" id="ct-estatico">0</span></div>
+    <div class="chip" data-type="video"        onclick="setType('video',this)">🎥 Vídeo <span class="chip-count" id="ct-video">0</span></div>
+  </div>
+</div>
+
+<div style="margin-left:auto;display:flex;align-items:center;gap:8px;flex-shrink:0">
+  <span class="result-count" id="result-count"></span>
+  <button class="clear-all-btn" id="clear-all-btn" onclick="clearAll()">
+    <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="1" y1="1" x2="8" y2="8"/><line x1="8" y1="1" x2="1" y2="8"/></svg>
+    Limpar
+  </button>
+  <button class="sort-btn" id="sort-btn" onclick="toggleSort()">
+    <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="1" y1="2.5" x2="10" y2="2.5"/><line x1="2" y1="5.5" x2="9" y2="5.5"/><line x1="3" y1="8.5" x2="8" y2="8.5"/></svg>
+    <span id="sort-label">Recente</span>
+  </button>
+</div>
+```
+
+  </div>
+
+  <!-- Row 2: Active pills -->
+
+  <div class="active-pills-row" id="active-pills"></div>
+</div>
+
+<!-- SHELL -->
+
+<div class="shell">
+  <div class="board">
+    <div class="col" id="col-agendado">
+      <div class="col-head">
+        <div class="col-label"><div class="col-pip pip-teal"></div><span class="col-title">Agendados</span></div>
+        <span class="col-badge" id="count-agendado">0</span>
+      </div>
+    </div>
+    <div class="col" id="col-rascunho">
+      <div class="col-head">
+        <div class="col-label"><div class="col-pip pip-yellow"></div><span class="col-title">Rascunhos</span></div>
+        <span class="col-badge" id="count-rascunho">0</span>
+      </div>
+    </div>
+    <div class="col" id="col-publicado">
+      <div class="col-head">
+        <div class="col-label"><div class="col-pip pip-green"></div><span class="col-title">Publicados</span></div>
+        <span class="col-badge" id="count-publicado">0</span>
+      </div>
+    </div>
+    <div class="col" id="col-backlog">
+      <div class="col-head">
+        <div class="col-label"><div class="col-pip pip-neutral"></div><span class="col-title">Backlog</span></div>
+        <span class="col-badge" id="count-backlog">0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+
+<div class="modal-bg" id="modal" onclick="handleOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title" id="modal-title">Nova ideia</div><div class="modal-sub" id="modal-sub">Adicione um post ao seu fluxo de conteúdo</div></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>Tipo de post</label>
+        <div class="type-selector">
+          <div class="type-opt" data-type="carrossel" onclick="pickType('carrossel',this)"><span class="type-opt-icon">🗂️</span>Carrossel</div>
+          <div class="type-opt" data-type="reels"     onclick="pickType('reels',this)"><span class="type-opt-icon">🎬</span>Reels</div>
+          <div class="type-opt" data-type="story"     onclick="pickType('story',this)"><span class="type-opt-icon">⚡</span>Story</div>
+          <div class="type-opt" data-type="estatico"  onclick="pickType('estatico',this)"><span class="type-opt-icon">🖼️</span>Estático</div>
+          <div class="type-opt" data-type="video"     onclick="pickType('video',this)"><span class="type-opt-icon">🎥</span>Vídeo</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>Legenda / Ideia</label>
+        <textarea id="form-caption" placeholder="Escreva a legenda ou descreva a ideia do post…" maxlength="2200" oninput="updateCC()"></textarea>
+        <div class="char-count" id="char-count">0 / 2200</div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Status</label>
+          <select id="form-status">
+            <option value="backlog">📋 Backlog</option>
+            <option value="rascunho">✏️ Rascunho</option>
+            <option value="agendado">📅 Agendado</option>
+            <option value="publicado">✅ Publicado</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Data de agendamento</label>
+          <input type="datetime-local" id="form-date">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="savePost()">Salvar post</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+
+<div class="modal-bg" id="detail-modal" onclick="handleDetailOverlay(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="modal-title" id="detail-title">Detalhes</div></div>
+      <button class="modal-close" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger" onclick="deleteViewing()">Excluir</button>
+      <button class="btn btn-ghost"  onclick="closeDetail()">Fechar</button>
+      <button class="btn btn-primary" onclick="editViewing()">Editar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toast-icon">✓</span><span id="toast-msg">—</span></div>
+
+<script>
+const TYPE_INFO = {
+  carrossel:{ emoji:'🗂️', label:'Carrossel', cls:'tb-carrossel', bar:'bar-carrossel' },
+  reels:    { emoji:'🎬', label:'Reels',     cls:'tb-reels',     bar:'bar-reels' },
+  story:    { emoji:'⚡', label:'Story',     cls:'tb-story',     bar:'bar-story' },
+  estatico: { emoji:'🖼️', label:'Estático',  cls:'tb-estatico',  bar:'bar-estatico' },
+  video:    { emoji:'🎥', label:'Vídeo',     cls:'tb-video',     bar:'bar-video' },
+};
+
+const STATUS_INFO = {
+  agendado: { label:'Agendado',  cls:'sp-teal',    pip:'var(--teal)' },
+  rascunho: { label:'Rascunho',  cls:'sp-yellow',  pip:'var(--yellow)' },
+  publicado:{ label:'Publicado', cls:'sp-green',   pip:'var(--green)' },
+  backlog:  { label:'Backlog',   cls:'sp-neutral', pip:'var(--xs)' },
+};
+
+const COLS = ['agendado','rascunho','publicado','backlog'];
+
+let posts = [
+  { id:1, type:'carrossel',status:'agendado',  caption:'5 sinais de que você está comendo por ansiedade — não por fome real\n\nSalva esse post antes de continuar. Você vai querer reler depois. 💛', date:'2026-03-26T18:00', createdAt:Date.now()-86400000*2 },
+  { id:2, type:'reels',    status:'agendado',  caption:'O que acontece no seu cérebro quando você faz dieta restritiva? Vem comigo descobrir por que a restrição sempre leva ao exagero. 🧠', date:'2026-03-28T19:30', createdAt:Date.now()-86400000*1 },
+  { id:3, type:'story',    status:'agendado',  caption:'Enquete rápida 👇\nVocê já percebeu que come MAIS quando está estressada?\n\nSim → arrasta pra cima\nNão → arrasta pra baixo', date:'2026-03-29T10:00', createdAt:Date.now()-3600000*3 },
+  { id:4, type:'carrossel',status:'rascunho',  caption:'Guia completo: como diferenciar fome emocional de fome física\n[Em desenvolvimento — precisa de revisão antes de publicar]', date:'', createdAt:Date.now()-3600000*6 },
+  { id:5, type:'reels',    status:'rascunho',  caption:'Por que você come mais à noite? A ciência por trás do comer noturno e 3 estratégias que realmente funcionam 🌙', date:'', createdAt:Date.now()-3600000*2 },
+  { id:6, type:'estatico', status:'rascunho',  caption:'Frase da semana:\n\n"Nenhuma dieta resolve o que o cansaço, a solidão e a ansiedade criaram." 🌿', date:'', createdAt:Date.now()-3600000*1 },
+  { id:7, type:'carrossel',status:'publicado', caption:'Por que você sabota quando tudo está indo bem?\n\nEsse padrão tem nome, e ele não é fraqueza. ✨\n\n#NutriçãoComportamental #MétodoTransformese', date:'2026-03-20T18:00', createdAt:Date.now()-86400000*4 },
+  { id:8, type:'reels',    status:'publicado', caption:'A relação entre cortisol e ganho de peso abdominal é REAL — e tem solução. Veja o que a ciência diz 🔬', date:'2026-03-18T10:00', createdAt:Date.now()-86400000*6 },
+  { id:9, type:'estatico', status:'publicado', caption:'"Nenhuma dieta resolve o que o cansaço, a solidão e a ansiedade criaram." 🌿\n\nCompartilha se faz sentido pra você.', date:'2026-03-15T09:00', createdAt:Date.now()-86400000*9 },
+  { id:10,type:'carrossel',status:'publicado', caption:'Guia: fome emocional vs fome física — como diferenciar e o que fazer em cada caso. Salva! 📌', date:'2026-03-12T18:00', createdAt:Date.now()-86400000*12 },
+  { id:11,type:'video',    status:'backlog',   caption:'Ideia: mini-doc sobre uma semana de alimentação intuitiva — do caos à calma. Mostrar bastidores reais.', date:'', createdAt:Date.now()-3600000*12 },
+  { id:12,type:'carrossel',status:'backlog',   caption:'Lista comentada de leituras sobre psicologia alimentar para recomendar às pacientes do grupo', date:'', createdAt:Date.now()-86400000*3 },
+  { id:13,type:'story',    status:'backlog',   caption:'Quiz: qual é o seu padrão emocional com a comida?\n— Ansiedade?\n— Compensação?\n— Restrição?', date:'', createdAt:Date.now()-86400000*1 },
+  { id:14,type:'reels',    status:'backlog',   caption:'3 formas de lidar com a ansiedade sem recorrer à comida — testadas, baseadas em evidências ❤️', date:'', createdAt:Date.now()-86400000*2 },
+];
+let nextId=15, selectedType='', editingId=null, viewingId=null;
+let fStatus='todos', fType='todos', fSearch='', sortAsc=false;
+
+function getFiltered(){
+  return posts
+    .filter(p=>fStatus==='todos'||p.status===fStatus)
+    .filter(p=>fType  ==='todos'||p.type  ===fType)
+    .filter(p=>!fSearch||p.caption.toLowerCase().includes(fSearch.toLowerCase()))
+    .sort((a,b)=>sortAsc?a.createdAt-b.createdAt:b.createdAt-a.createdAt);
+}
+
+function hl(text,term){
+  if(!term) return esc(text);
+  const safe=esc(text), re=term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+  return safe.replace(new RegExp(`(${re})`,'gi'),'<mark class="hl">$1</mark>');
+}
+
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+
+function renderAll(){
+  const f=getFiltered();
+  COLS.forEach(st=>{
+    const col=document.getElementById(`col-${st}`);
+    col.querySelectorAll('.card,.col-empty').forEach(e=>e.remove());
+    const cp=f.filter(p=>p.status===st);
+    document.getElementById(`count-${st}`).textContent=cp.length;
+    if(!cp.length){
+      const empty=document.createElement('div');
+      empty.className='col-empty';
+      const icons={agendado:'📅',rascunho:'✏️',publicado:'✅',backlog:'💡'};
+      const isF=fStatus!=='todos'||fType!=='todos'||fSearch;
+      empty.innerHTML=`<div class="col-empty-icon">${icons[st]}</div><div class="col-empty-text">${isF?'Sem resultados para os filtros aplicados':'Nenhum post aqui ainda'}</div>`;
+      col.appendChild(empty);
+    } else { cp.forEach(p=>col.appendChild(buildCard(p))); }
+  });
+  updateUI(f);
+  updateCounts();
+}
+
+function buildCard(p){
+  const ti=TYPE_INFO[p.type]||TYPE_INFO.carrossel;
+  const si=STATUS_INFO[p.status];
+  const card=document.createElement('div');
+  card.className='card';
+  card.dataset.id=p.id;
+  card.onclick=e=>{ if(!e.target.closest('.btn')&&!e.target.closest('.card-menu')&&!e.target.closest('.type-badge')) openDetail(p.id); };
+  const ds=p.date?fmtDate(p.date):(p.status==='publicado'?'Publicado':'—');
+  card.innerHTML=`
+    <div class="card-bar ${ti.bar}"></div>
+    <div class="card-inner">
+      <div class="card-top">
+        <span class="type-badge ${ti.cls}" onclick="setType('${p.type}',null);event.stopPropagation()" title="Filtrar por ${ti.label}">${ti.emoji} ${ti.label}</span>
+        <button class="card-menu" onclick="cycleStatus(${p.id},event)" title="Avançar status">⋯</button>
+      </div>
+      <div class="card-caption">${hl(p.caption,fSearch)}</div>
+      <div class="card-footer">
+        <div class="card-date">
+          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="1" y="2" width="10" height="9" rx="1.5"/><line x1="4" y1="1" x2="4" y2="3"/><line x1="8" y1="1" x2="8" y2="3"/><line x1="1" y1="5" x2="11" y2="5"/></svg>
+          ${ds}
+        </div>
+        <div class="card-actions">
+          <button class="btn btn-danger" onclick="deletePost(${p.id},event)">✕</button>
+          <button class="btn btn-ghost" onclick="openEdit(${p.id},event)">Editar</button>
+        </div>
+      </div>
+    </div>`;
+  return card;
+}
+
+function updateUI(filtered){
+  const isF=fStatus!=='todos'||fType!=='todos'||fSearch;
+  const rc=document.getElementById('result-count');
+  rc.innerHTML=isF?`<strong>${filtered.length}</strong> de ${posts.length}`:`<strong>${posts.length}</strong> posts`;
+  document.getElementById('clear-all-btn').classList.toggle('show',isF);
+  document.getElementById('sort-btn').classList.toggle('active',sortAsc);
+  const pills=[];
+  if(fSearch) pills.push({label:`"${fSearch}"`,rm:()=>clearSearch()});
+  if(fStatus!=='todos') pills.push({label:STATUS_INFO[fStatus].label,rm:()=>setStatus('todos',document.querySelector('[data-status="todos"]'))});
+  if(fType!=='todos') pills.push({label:TYPE_INFO[fType].label,rm:()=>setType('todos',document.querySelector('[data-type="todos"]'))});
+  const row=document.getElementById('active-pills');
+  row.innerHTML='';
+  pills.forEach(p=>{ const el=document.createElement('span'); el.className='active-pill'; el.innerHTML=`${p.label}<button class="active-pill-x" onclick="">✕</button>`; el.querySelector('.active-pill-x').onclick=()=>p.rm(); row.appendChild(el); });
+  row.classList.toggle('show',pills.length>0);
+}
+
+function updateCounts(){
+  const cnt=(f,v)=>posts.filter(p=>f==='status'?p.status===v:p.type===v).length;
+  const tf=t=>posts.filter(p=>(fStatus==='todos'||p.status===fStatus)&&(fSearch?p.caption.toLowerCase().includes(fSearch.toLowerCase()):true)&&(t==='todos'||p.type===t)).length;
+  const sf=s=>posts.filter(p=>(fType==='todos'||p.type===fType)&&(fSearch?p.caption.toLowerCase().includes(fSearch.toLowerCase()):true)&&(s==='todos'||p.status===s)).length;
+  document.getElementById('cs-todos').textContent=sf('todos');
+  ['agendado','rascunho','publicado','backlog'].forEach(s=>{ const el=document.getElementById(`cs-${s}`); if(el) el.textContent=sf(s); });
+  document.getElementById('ct-todos').textContent=tf('todos');
+  ['carrossel','reels','story','estatico','video'].forEach(t=>{ const el=document.getElementById(`ct-${t}`); if(el) el.textContent=tf(t); });
+}
+
+// Filter funcs
+function setStatus(s,el){ fStatus=s; document.querySelectorAll('[data-status]').forEach(c=>c.classList.remove('on')); (el||document.querySelector(`[data-status="${s}"]`))?.classList.add('on'); renderAll(); }
+function setType(t,el){ fType=t; document.querySelectorAll('[data-type]').forEach(c=>c.classList.remove('on')); (el||document.querySelector(`[data-type="${t}"]`))?.classList.add('on'); renderAll(); }
+function onSearch(){ fSearch=document.getElementById('search-input').value.trim(); document.getElementById('search-clear').classList.toggle('show',fSearch.length>0); renderAll(); }
+function clearSearch(){ document.getElementById('search-input').value=''; fSearch=''; document.getElementById('search-clear').classList.remove('show'); renderAll(); }
+function clearAll(){ fStatus='todos'; fType='todos'; clearSearch(); sortAsc=false; document.querySelectorAll('[data-status]').forEach(c=>c.classList.remove('on')); document.querySelectorAll('[data-type]').forEach(c=>c.classList.remove('on')); document.querySelector('[data-status="todos"]')?.classList.add('on'); document.querySelector('[data-type="todos"]')?.classList.add('on'); renderAll(); }
+function toggleSort(){ sortAsc=!sortAsc; document.getElementById('sort-label').textContent=sortAsc?'Antigo':'Recente'; renderAll(); }
+
+// Post actions
+function deletePost(id,e){ e?.stopPropagation(); posts=posts.filter(p=>p.id!==id); renderAll(); showToast('Post excluído','🗑'); }
+function cycleStatus(id,e){ e?.stopPropagation(); const ord=['backlog','rascunho','agendado','publicado']; const i=posts.findIndex(p=>p.id===id); if(i<0)return; const ci=ord.indexOf(posts[i].status); posts[i].status=ord[(ci+1)%ord.length]; renderAll(); showToast(`→ ${STATUS_INFO[posts[i].status].label}`,'✓'); }
+
+// Modal
+function openModal(pre='backlog'){ editingId=null; selectedType=''; document.getElementById('form-caption').value=''; document.getElementById('form-status').value=pre; document.getElementById('form-date').value=''; document.getElementById('char-count').textContent='0 / 2200'; document.querySelectorAll('.type-opt').forEach(o=>o.classList.remove('selected')); document.getElementById('modal-title').textContent='Nova ideia'; document.getElementById('modal-sub').textContent='Adicione um post ao seu fluxo de conteúdo'; document.getElementById('modal').classList.add('open'); setTimeout(()=>document.getElementById('form-caption').focus(),200); }
+function openEdit(id,e){ e?.stopPropagation(); closeDetail(); const p=posts.find(x=>x.id===id); if(!p) return; editingId=id; selectedType=p.type; document.getElementById('modal-title').textContent='Editar post'; document.getElementById('modal-sub').textContent='Atualize as informações do post'; document.getElementById('form-caption').value=p.caption; document.getElementById('form-status').value=p.status; document.getElementById('form-date').value=p.date||''; updateCC(); document.querySelectorAll('.type-opt').forEach(o=>o.classList.toggle('selected',o.dataset.type===p.type)); document.getElementById('modal').classList.add('open'); }
+function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+function handleOverlay(e){ if(e.target===document.getElementById('modal')) closeModal(); }
+function pickType(t,el){ selectedType=t; document.querySelectorAll('.type-opt').forEach(o=>o.classList.remove('selected')); el.classList.add('selected'); }
+function updateCC(){ const v=document.getElementById('form-caption').value; const el=document.getElementById('char-count'); el.textContent=`${v.length} / 2200`; el.className='char-count'+(v.length>2200?' over':v.length>2000?' warn':''); }
+function savePost(){ const cap=document.getElementById('form-caption').value.trim(); if(!cap){ document.getElementById('form-caption').style.borderColor='rgba(248,113,113,.6)'; setTimeout(()=>document.getElementById('form-caption').style.borderColor='',1200); return; } const status=document.getElementById('form-status').value; const date=document.getElementById('form-date').value; const type=selectedType||'carrossel'; if(editingId){ const i=posts.findIndex(p=>p.id===editingId); if(i>=0) posts[i]={...posts[i],caption:cap,status,date,type}; showToast('Post atualizado','✓'); } else { posts.unshift({id:nextId++,type,status,caption:cap,date,createdAt:Date.now()}); showToast('Ideia salva! ✨','✨'); } closeModal(); renderAll(); }
+
+// Detail
+function openDetail(id){ const p=posts.find(x=>x.id===id); if(!p) return; viewingId=id; const ti=TYPE_INFO[p.type]||TYPE_INFO.carrossel; const si=STATUS_INFO[p.status]; document.getElementById('detail-title').innerHTML=`${ti.emoji} ${ti.label}`; document.getElementById('detail-body').innerHTML=`<div class="field"><label>Legenda</label><div class="detail-caption">${esc(p.caption)}</div></div><div class="detail-meta"><div class="detail-meta-item"><div class="detail-meta-lbl">Status</div><div class="detail-meta-val">${STATUS_INFO[p.status].label}</div></div><div class="detail-meta-item"><div class="detail-meta-lbl">Agendamento</div><div class="detail-meta-val">${p.date?fmtDate(p.date):'—'}</div></div></div><div class="field"><label>Mover para</label><div class="detail-move-row">${COLS.filter(s=>s!==p.status).map(s=>`<button class="btn btn-ghost-sm" onclick="movePost(${p.id},'${s}')">${STATUS_INFO[s].label}</button>`).join('')}</div></div>`; document.getElementById('detail-modal').classList.add('open'); }
+function closeDetail(){ document.getElementById('detail-modal').classList.remove('open'); viewingId=null; }
+function handleDetailOverlay(e){ if(e.target===document.getElementById('detail-modal')) closeDetail(); }
+function deleteViewing(){ if(!viewingId) return; deletePost(viewingId); closeDetail(); }
+function editViewing(){ if(!viewingId) return; openEdit(viewingId); }
+function movePost(id,s){ const i=posts.findIndex(p=>p.id===id); if(i>=0){ posts[i].status=s; renderAll(); closeDetail(); showToast(`Movido → ${STATUS_INFO[s].label}`,'✓'); } }
+
+function fmtDate(s){ if(!s) return '—'; const d=new Date(s); return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); }
+
+let tT; function showToast(msg,icon='✓'){ document.getElementById('toast-msg').textContent=msg; document.getElementById('toast-icon').textContent=icon; const t=document.getElementById('toast'); t.classList.add('show'); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('show'),2600); }
+
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){closeModal();closeDetail();} if((e.metaKey||e.ctrlKey)&&e.key==='Enter'&&document.getElementById('modal').classList.contains('open')) savePost(); if(e.key==='n'&&!e.metaKey&&!e.ctrlKey&&!e.target.closest('input,textarea,select')) openModal(); if((e.metaKey||e.ctrlKey)&&e.key==='f'){e.preventDefault();document.getElementById('search-input').focus();} });
+
+renderAll();
+</script>
+
+</body>
+</html>
