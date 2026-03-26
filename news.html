@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notícias — Contentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@1,9..144,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+:root{
+  --bg:#080b12;--s1:#0d1120;--s2:#111626;--s3:#161c2e;--s4:#1c2236;--s5:#222840;
+  --b1:#1e2438;--b2:#252c42;--b3:#2e3650;
+  --hi:#eef0ff;--text:#bbbfd8;--lo:#6068a0;--xs:#3c4468;
+  --accent:#6c8ef5;--accent-hi:#8ba4ff;
+  --green:#34d399;--yellow:#fbbf24;--red:#f87171;
+  --violet:#a78bfa;--sky:#60a5fa;--teal:#2dd4bf;--orange:#fb923c;
+  --t-pesquisa:#60a5fa;--t-ferramentas:#fb923c;--t-negocios:#34d399;
+  --t-nutricao:#c084fc;--t-ciencia:#fbbf24;--t-comportamento:#f472b6;
+  --r:10px;--r-sm:6px;--r-lg:14px;
+}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s5);border-radius:2px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;background:rgba(8,11,18,.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(–b1);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:30px;height:30px;background:linear-gradient(135deg,var(–accent),#9b6dff);border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(108,142,245,.35)}
+.brand-mark svg{width:15px;height:15px}
+.brand-name{font-size:15px;font-weight:700;color:var(–hi);letter-spacing:-.02em}
+.nav-links{display:flex;align-items:center;background:var(–s3);border:1px solid var(–b1);border-radius:8px;padding:3px;gap:1px}
+.nav-link{padding:5px 14px;border-radius:6px;font-size:12.5px;font-weight:500;color:var(–lo);cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none;display:flex;align-items:center;gap:5px}
+.nav-link:hover{color:var(–text)}.nav-link.active{background:var(–s5);color:var(–hi)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(–accent),var(–violet));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;cursor:pointer}
+
+/* FILTER BAR */
+.filterbar{background:var(–s1);border-bottom:1px solid var(–b1);padding:10px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:sticky;top:56px;z-index:100}
+.topic-tabs{display:flex;gap:3px;overflow-x:auto;flex-shrink:0}
+.topic-tabs::-webkit-scrollbar{display:none}
+.ttab{padding:6px 14px;border-radius:6px;border:1px solid var(–b1);background:transparent;color:var(–lo);font-family:inherit;font-size:11.5px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;user-select:none;display:flex;align-items:center;gap:5px}
+.ttab:hover{color:var(–text);border-color:var(–b2)}
+.ttab.active{font-weight:600}
+.ttab[data-t=“todos”].active{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12);color:var(–hi)}
+.ttab[data-t=“pesquisa”].active{background:rgba(96,165,250,.1);border-color:rgba(96,165,250,.3);color:var(–t-pesquisa)}
+.ttab[data-t=“ferramentas”].active{background:rgba(251,146,60,.1);border-color:rgba(251,146,60,.3);color:var(–t-ferramentas)}
+.ttab[data-t=“negocios”].active{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:var(–t-negocios)}
+.ttab[data-t=“nutricao”].active{background:rgba(192,132,252,.1);border-color:rgba(192,132,252,.3);color:var(–t-nutricao)}
+.ttab[data-t=“ciencia”].active{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.3);color:var(–t-ciencia)}
+.ttab[data-t=“comportamento”].active{background:rgba(244,114,182,.1);border-color:rgba(244,114,182,.3);color:var(–t-comportamento)}
+.tcnt{font-family:‘JetBrains Mono’,monospace;font-size:9.5px;background:rgba(255,255,255,.06);padding:0 5px;border-radius:4px;color:inherit}
+.filter-sep{width:1px;height:18px;background:var(–b2);flex-shrink:0}
+.search-field{display:flex;align-items:center;gap:8px;background:var(–s4);border:1px solid var(–b2);border-radius:var(–r-sm);padding:7px 12px;flex:1;max-width:280px;transition:border-color .15s,box-shadow .15s}
+.search-field:focus-within{border-color:rgba(108,142,245,.4);box-shadow:0 0 0 3px rgba(108,142,245,.07)}
+.search-field svg{color:var(–xs);flex-shrink:0}
+.search-field input{background:none;border:none;outline:none;color:var(–text);font-family:inherit;font-size:12.5px;width:100%}
+.search-field input::placeholder{color:var(–xs)}
+.sort-select{background:var(–s4);border:1px solid var(–b2);border-radius:var(–r-sm);color:var(–lo);font-family:inherit;font-size:11.5px;padding:6px 10px;outline:none;cursor:pointer}
+.sort-select option{background:var(–s3)}
+.btn-refresh{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(–r-sm);border:1px solid var(–b2);background:var(–s4);color:var(–lo);font-family:inherit;font-size:12px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-refresh:hover{color:var(–text);border-color:var(–b3)}.btn-refresh.spinning svg{animation:spin .6s linear infinite}
+
+/* SOURCE CHIPS */
+.src-bar{background:var(–s2);border-bottom:1px solid var(–b1);padding:8px 28px;display:flex;align-items:center;gap:8px;overflow-x:auto}
+.src-bar::-webkit-scrollbar{display:none}
+.src-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(–xs);white-space:nowrap;flex-shrink:0;font-family:‘JetBrains Mono’,monospace}
+.src-chip{display:flex;align-items:center;gap:5px;padding:4px 11px;border-radius:5px;border:1px solid var(–b2);background:var(–s3);color:var(–lo);font-family:‘JetBrains Mono’,monospace;font-size:10px;font-weight:500;cursor:pointer;transition:all .12s;white-space:nowrap;flex-shrink:0;user-select:none}
+.src-chip:hover{color:var(–text);border-color:var(–b3)}.src-chip.active{color:var(–hi);background:var(–s4);border-color:var(–b3)}
+.src-dot{width:5px;height:5px;border-radius:50%}
+
+/* SHELL */
+.shell{max-width:1360px;margin:0 auto;padding:24px 28px 80px}
+
+/* STATS */
+.stats-row{display:flex;align-items:center;gap:0;margin-bottom:24px}
+.stat-item{display:flex;flex-direction:column;gap:2px;padding:0 20px}
+.stat-item:first-child{padding-left:0}
+.stat-num{font-family:‘JetBrains Mono’,monospace;font-size:22px;font-weight:600;color:var(–hi);line-height:1}
+.stat-lbl{font-size:10px;color:var(–xs);text-transform:uppercase;letter-spacing:.08em;font-weight:600;font-family:‘JetBrains Mono’,monospace}
+.stat-sep{width:1px;height:32px;background:var(–b2)}
+.result-info{font-family:‘JetBrains Mono’,monospace;font-size:11px;color:var(–xs);margin-left:auto}
+.result-info strong{color:var(–text)}
+
+/* LAYOUT */
+.content-grid{display:grid;grid-template-columns:1fr 284px;gap:24px}
+
+/* FEATURED */
+.featured{background:var(–s2);border:1px solid var(–b2);border-radius:var(–r-lg);overflow:hidden;cursor:pointer;transition:border-color .2s;margin-bottom:16px;animation:fadeUp .4s ease both;display:grid;grid-template-columns:1fr 280px}
+.featured:hover{border-color:var(–b3)}
+.featured-body{padding:28px 30px;display:flex;flex-direction:column;gap:14px}
+.featured-eyebrow{display:flex;align-items:center;gap:8px}
+.featured-title{font-size:22px;font-weight:700;color:var(–hi);line-height:1.3;letter-spacing:-.02em}
+.featured-summary{font-size:13.5px;line-height:1.7;color:var(–lo);font-weight:400;flex:1}
+.featured-meta{display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px solid var(–b1)}
+.featured-visual{background:var(–s3);border-left:1px solid var(–b1);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.art-glyph{font-size:72px;opacity:.1;user-select:none}
+.art-overlay{position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,rgba(255,255,255,.018))}
+
+/* GRID */
+.news-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+
+/* CARD */
+.card{background:var(–s2);border:1px solid var(–b1);border-radius:var(–r);overflow:hidden;cursor:pointer;transition:border-color .18s,transform .18s,box-shadow .18s;display:flex;flex-direction:column;animation:fadeUp .35s ease both;position:relative}
+.card:hover{border-color:var(–b3);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.3)}
+.card::before{content:’’;position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.04),transparent)}
+.card-bar{height:2px;width:100%;flex-shrink:0}
+.card-body{padding:15px 17px;flex:1;display:flex;flex-direction:column}
+.card-eyebrow{display:flex;align-items:center;gap:6px;margin-bottom:9px;flex-wrap:wrap}
+.card-title{font-size:14px;font-weight:600;color:var(–hi);line-height:1.4;letter-spacing:-.01em;margin-bottom:7px}
+.card:hover .card-title{color:var(–hi)}
+.card-summary{font-size:12px;line-height:1.65;color:var(–lo);font-weight:400;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:11px}
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(–b1);gap:6px}
+
+/* BADGE ELEMENTS */
+.topic-pill{font-family:‘JetBrains Mono’,monospace;font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+.new-badge{display:inline-flex;align-items:center;gap:3px;background:rgba(96,165,250,.12);color:var(–sky);font-family:‘JetBrains Mono’,monospace;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.1em}
+.hot-badge{background:rgba(244,114,182,.12);color:var(–t-comportamento);font-family:‘JetBrains Mono’,monospace;font-size:8px;font-weight:700;padding:2px 7px;border-radius:4px;text-transform:uppercase}
+.src-badge{font-family:‘JetBrains Mono’,monospace;font-size:9.5px;font-weight:500;color:var(–xs);display:flex;align-items:center;gap:5px}
+.src-fav{width:14px;height:14px;border-radius:3px;background:var(–s5);display:flex;align-items:center;justify-content:center;font-size:9px}
+.pub-date{font-family:‘JetBrains Mono’,monospace;font-size:9.5px;color:var(–xs)}
+.read-time{font-family:‘JetBrains Mono’,monospace;font-size:9.5px;color:var(–xs)}
+.rel-wrap{display:flex;align-items:center;gap:5px}
+.rel-track{width:40px;height:3px;background:var(–s4);border-radius:2px;overflow:hidden}
+.rel-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(–teal),var(–accent))}
+.rel-pct{font-family:‘JetBrains Mono’,monospace;font-size:9px;font-weight:700;color:var(–teal)}
+
+/* CARD ACTIONS */
+.card-acts{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.card:hover .card-acts{opacity:1}
+.act-btn{width:24px;height:24px;border-radius:5px;border:1px solid var(–b2);background:var(–s3);color:var(–lo);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;transition:all .12s}
+.act-btn:hover{color:var(–text);border-color:var(–b3)}.act-btn.saved{color:var(–yellow);border-color:rgba(251,191,36,.3)}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:16px}
+.sb-block{background:var(–s2);border:1px solid var(–b1);border-radius:var(–r);overflow:hidden}
+.sb-hdr{padding:12px 16px;border-bottom:1px solid var(–b1);display:flex;align-items:center;justify-content:space-between}
+.sb-title{font-family:‘JetBrains Mono’,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(–xs)}
+.sb-body{padding:10px 14px}
+
+.trend-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(–b1);cursor:pointer;transition:all .1s}
+.trend-item:last-child{border-bottom:none}.trend-item:hover .trend-lbl{color:var(–hi)}
+.trend-rank{font-family:‘JetBrains Mono’,monospace;font-size:10px;color:var(–xs);width:16px;flex-shrink:0}
+.trend-lbl{font-size:12px;color:var(–text);flex:1;transition:color .12s}
+.trend-cnt{font-family:‘JetBrains Mono’,monospace;font-size:10px;color:var(–xs)}
+
+.src-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(–b1);cursor:pointer;transition:opacity .12s}
+.src-row:last-child{border-bottom:none}.src-row:hover{opacity:.8}
+.src-row-fav{width:22px;height:22px;border-radius:5px;background:var(–s4);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.src-row-name{font-size:12px;color:var(–text);flex:1}
+.src-row-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.src-row-cnt{font-family:‘JetBrains Mono’,monospace;font-size:10px;color:var(–xs)}
+
+/* LIVE INDICATOR */
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(–accent);animation:pulse 2.5s ease-in-out infinite;box-shadow:0 0 6px rgba(108,142,245,.6)}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(–s3);border:1px solid var(–b3);border-radius:30px;padding:10px 20px;font-size:12.5px;color:var(–text);display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:600;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:1100px){.content-grid{grid-template-columns:1fr}}
+@media(max-width:720px){.news-grid{grid-template-columns:1fr}.featured{grid-template-columns:1fr}.featured-visual{display:none}}
+</style>
+
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="brand-mark"><svg viewBox="0 0 15 15" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="10" height="10" rx="2.5"/><circle cx="7.5" cy="7.5" r="2"/><circle cx="11" cy="4" r=".8" fill="white" stroke="none"/></svg></div>
+    <div class="brand-name">Contentos</div>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" href="instagram-dashboard.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="2.5"/><circle cx="6.5" cy="6.5" r="2"/><circle cx="10" cy="3" r=".6" fill="currentColor" stroke="none"/></svg>Conteúdo</a>
+    <a class="nav-link" href="analytics.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="1,10 4,6 7,8 12,2"/></svg>Analytics</a>
+    <a class="nav-link" href="calendar.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="2.5" width="10" height="9" rx="1.5"/><line x1="4" y1="1.5" x2="4" y2="3.5"/><line x1="9" y1="1.5" x2="9" y2="3.5"/><line x1="1.5" y1="5.5" x2="11.5" y2="5.5"/></svg>Calendário</a>
+    <a class="nav-link" href="competitors.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="9.5" cy="8" r="2.5"/></svg>Concorrentes</a>
+    <a class="nav-link active" href="news.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/><line x1="4" y1="5" x2="9" y2="5"/><line x1="4" y1="7.5" x2="9" y2="7.5"/><line x1="4" y1="10" x2="7" y2="10"/></svg>Notícias</a>
+  </div>
+  <div class="nav-right">
+    <div style="display:flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--xs)">
+      <div class="live-dot"></div>
+      <span id="update-time">Atualizando…</span>
+    </div>
+    <div class="nav-avatar">N</div>
+  </div>
+</nav>
+
+<!-- FILTER BAR -->
+
+<div class="filterbar">
+  <div class="topic-tabs">
+    <button class="ttab active" data-t="todos" onclick="setTopic('todos',this)">Todos <span class="tcnt" id="cnt-todos">0</span></button>
+    <button class="ttab" data-t="pesquisa" onclick="setTopic('pesquisa',this)">🔬 Pesquisa <span class="tcnt" id="cnt-pesquisa">0</span></button>
+    <button class="ttab" data-t="ferramentas" onclick="setTopic('ferramentas',this)">🛠 Ferramentas <span class="tcnt" id="cnt-ferramentas">0</span></button>
+    <button class="ttab" data-t="negocios" onclick="setTopic('negocios',this)">📈 Negócios <span class="tcnt" id="cnt-negocios">0</span></button>
+    <button class="ttab" data-t="nutricao" onclick="setTopic('nutricao',this)">🥗 Nutrição <span class="tcnt" id="cnt-nutricao">0</span></button>
+    <button class="ttab" data-t="ciencia" onclick="setTopic('ciencia',this)">🧬 Ciência <span class="tcnt" id="cnt-ciencia">0</span></button>
+    <button class="ttab" data-t="comportamento" onclick="setTopic('comportamento',this)">🧠 Comportamento <span class="tcnt" id="cnt-comportamento">0</span></button>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="search-field">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><line x1="9" y1="9" x2="12" y2="12"/></svg>
+    <input type="text" id="search-input" placeholder="Buscar notícias…" oninput="applyFilters()">
+  </div>
+  <select class="sort-select" id="sort-select" onchange="applyFilters()">
+    <option value="date">Mais recente</option>
+    <option value="relevance">Relevância</option>
+    <option value="source">Fonte</option>
+  </select>
+  <button class="btn-refresh" id="refresh-btn" onclick="refreshFeeds()">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 2A5.5 5.5 0 1 0 11 6.5"/><polyline points="11,1 11,4 8,4"/></svg>
+    Atualizar
+  </button>
+</div>
+
+<!-- SOURCE BAR -->
+
+<div class="src-bar">
+  <span class="src-lbl">Fontes</span>
+  <div id="src-chips"></div>
+</div>
+
+<!-- SHELL -->
+
+<div class="shell">
+  <div class="stats-row" style="margin-bottom:20px">
+    <div class="stat-item"><div class="stat-num" id="s-total">16</div><div class="stat-lbl">Artigos</div></div>
+    <div class="stat-sep"></div>
+    <div class="stat-item"><div class="stat-num" id="s-sources">7</div><div class="stat-lbl">Fontes</div></div>
+    <div class="stat-sep"></div>
+    <div class="stat-item"><div class="stat-num" id="s-new">5</div><div class="stat-lbl">Novos hoje</div></div>
+    <div class="stat-sep"></div>
+    <div class="stat-item"><div class="stat-num" id="s-hot">4</div><div class="stat-lbl">Em alta</div></div>
+    <div class="result-info" id="result-info"></div>
+  </div>
+
+  <div class="content-grid">
+    <div id="main-col"></div>
+    <aside class="sidebar">
+      <div class="sb-block">
+        <div class="sb-hdr"><span class="sb-title">Tópicos em alta</span></div>
+        <div class="sb-body" id="trending-list"></div>
+      </div>
+      <div class="sb-block">
+        <div class="sb-hdr"><span class="sb-title">Fontes ativas</span></div>
+        <div class="sb-body" id="sources-list"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="ti">✓</span><span id="tm">—</span></div>
+
+<script>
+const TOPIC_COLORS={pesquisa:'#60a5fa',ferramentas:'#fb923c',negocios:'#34d399',nutricao:'#c084fc',ciencia:'#fbbf24',comportamento:'#f472b6'};
+const TOPIC_LABELS={pesquisa:'Pesquisa',ferramentas:'Ferramentas',negocios:'Negócios',nutricao:'Nutrição',ciencia:'Ciência',comportamento:'Comportamento'};
+const SOURCES=[
+  {id:'pubmed',   name:'PubMed',          emoji:'🔬',color:'#60a5fa'},
+  {id:'harvard',  name:'Harvard Health',  emoji:'🎓',color:'#34d399'},
+  {id:'nature',   name:'Nature Medicine', emoji:'🧬',color:'#fbbf24'},
+  {id:'sbem',     name:'SBEM',            emoji:'🏥',color:'#c084fc'},
+  {id:'webmd',    name:'WebMD',           emoji:'💊',color:'#fb923c'},
+  {id:'examine',  name:'Examine.com',     emoji:'📊',color:'#60a5fa'},
+  {id:'nutriday', name:'NutriDay BR',     emoji:'🇧🇷',color:'#34d399'},
+];
+
+function hAgo(h){return new Date(Date.now()-h*3600000);}
+
+const ARTICLES=[
+  {id:1,src:'nature',topic:'ciencia',isNew:true,isHot:true,rel:98,read:6,date:hAgo(1),
+    headline:'Meta-análise confirma relação causal entre cortisol crônico e obesidade abdominal em mulheres',
+    summary:'Pesquisa com 48.000 participantes demonstrou que estresse crônico eleva cortisol, promovendo depósito preferencial de gordura visceral independente da ingestão calórica. O mecanismo envolve receptores de glicocorticoide no tecido adiposo abdominal.'},
+  {id:2,src:'harvard',topic:'comportamento',isNew:true,isHot:true,rel:95,read:5,date:hAgo(3),
+    headline:'Alimentação mindful reduz episódios de comer emocional em 47% após 8 semanas de prática',
+    summary:'Ensaio clínico randomizado com 312 mulheres entre 25–50 anos demonstrou que mindful eating supera dietas restritivas na redução de compulsão. Resultados foram duradouros no acompanhamento de 12 meses.'},
+  {id:3,src:'pubmed',topic:'pesquisa',isNew:true,isHot:false,rel:91,read:8,date:hAgo(5),
+    headline:'GLP-1 agonistas mostram eficácia sustentada em pacientes com histórico de dieta yo-yo',
+    summary:'Estudo de 18 meses avaliou resposta de 890 pacientes a medicamentos GLP-1 com pelo menos 3 ciclos de restrição alimentar. Perda de peso foi significativamente maior que em controles naïve.'},
+  {id:4,src:'examine',topic:'ferramentas',isNew:true,isHot:false,rel:84,read:10,date:hAgo(6),
+    headline:'Revisão completa de 14 aplicativos de rastreamento calórico: precisão, usabilidade e custo em 2025',
+    summary:'Análise independente avaliou banco de dados nutricional, UX e integração com wearables. Cronometer e MyFitnessPal lideraram em acurácia; novos apps com IA de imagem mostraram resultados promissores.'},
+  {id:5,src:'sbem',topic:'negocios',isNew:true,isHot:true,rel:87,read:4,date:hAgo(9),
+    headline:'Nutrição comportamental cresce 74% no Brasil — especialistas preveem consolidação do setor',
+    summary:'Dados da SBEM apontam crescimento acelerado impulsionado pela demanda por abordagens além da dieta tradicional. Clínicas especializadas registraram aumento de 3x em consultas nos últimos dois anos.'},
+  {id:6,src:'webmd',topic:'nutricao',isNew:false,isHot:false,rel:78,read:7,date:hAgo(11),
+    headline:'Jejum intermitente 16:8 vs 5:2 vs OMAD: comparação prática das evidências para emagrecimento',
+    summary:'Revisão comparando os três protocolos populares. O 16:8 mostrou maior aderência a longo prazo; o 5:2 demonstrou benefícios metabólicos específicos; OMAD apresentou riscos nutricionais em populações específicas.'},
+  {id:7,src:'nature',topic:'ciencia',isNew:false,isHot:true,rel:93,read:9,date:hAgo(14),
+    headline:'Microbiota intestinal regula apetite via eixo intestino-cérebro — novo mecanismo identificado',
+    summary:'Pesquisadores identificaram que cepas específicas de bactérias produzem peptídeos que mimetizam GLP-1, regulando saciedade. O achado abre perspectivas para intervenções probióticas no tratamento da obesidade.'},
+  {id:8,src:'examine',topic:'ferramentas',isNew:false,isHot:false,rel:76,read:8,date:hAgo(16),
+    headline:'Smartwatches e anéis inteligentes para monitoramento metabólico: o que a ciência diz sobre precisão',
+    summary:'Análise crítica da literatura sobre precisão dos wearables para estimar gasto calórico. Resultados mostram margens de erro de 15–40% em modelos populares, com implicações importantes para controle de peso.'},
+  {id:9,src:'harvard',topic:'comportamento',isNew:false,isHot:false,rel:82,read:6,date:hAgo(20),
+    headline:'A psicologia da autossabotagem no emagrecimento: mecanismos e estratégias baseadas em evidência',
+    summary:'Análise dos mecanismos psicológicos que levam pessoas a sabotar o próprio progresso. O fenômeno está associado ao medo de mudança de identidade e instabilidade de autoconceito.'},
+  {id:10,src:'nutriday',topic:'nutricao',isNew:false,isHot:false,rel:72,read:5,date:hAgo(24),
+    headline:'Cardápio anti-inflamatório para emagrecimento: protocolo utilizado nas melhores clínicas do Brasil',
+    summary:'Especialistas descrevem a abordagem que combina princípios da dieta mediterrânea com alimentos funcionais brasileiros, focando na redução da inflamação sistêmica como caminho para emagrecimento sustentável.'},
+  {id:11,src:'pubmed',topic:'pesquisa',isNew:false,isHot:false,rel:80,read:7,date:hAgo(30),
+    headline:'Sono de qualidade como fator determinante no emagrecimento: meta-análise de 47 estudos',
+    summary:'Pessoas com menos de 7 horas de sono têm 30% mais probabilidade de desenvolver obesidade. A privação de sono altera grelina e leptina, aumentando fome e reduzindo saciedade.'},
+  {id:12,src:'sbem',topic:'negocios',isNew:false,isHot:false,rel:68,read:4,date:hAgo(36),
+    headline:'ANVISA publica novos critérios para alegações de controle de peso em alimentos funcionais',
+    summary:'Atualização das diretrizes afeta rótulos de suplementos, alimentos funcionais e shakes substitutos de refeição vendidos no mercado brasileiro.'},
+  {id:13,src:'webmd',topic:'ferramentas',isNew:false,isHot:false,rel:74,read:6,date:hAgo(42),
+    headline:'Bioimpedância vs DEXA vs circunferências: qual método para avaliar gordura corporal com mais precisão?',
+    summary:'Comparativo das principais metodologias disponíveis. DEXA permanece padrão-ouro, mas bioimpedância tetrapolar de alta frequência mostrou resultados aceitáveis para acompanhamento clínico.'},
+  {id:14,src:'examine',topic:'ciencia',isNew:false,isHot:false,rel:83,read:8,date:hAgo(48),
+    headline:'Proteína e saciedade: quanto precisamos por refeição para controlar apetite de forma eficaz?',
+    summary:'Revisão sistemática sobre timing e quantidade de proteína para maximizar saciedade. Os dados sugerem que 30–40g por refeição é o limiar para ativação ótima de peptídeos de saciedade.'},
+  {id:15,src:'nutriday',topic:'comportamento',isNew:false,isHot:false,rel:77,read:5,date:hAgo(52),
+    headline:'Comer emocional em mulheres profissionais: padrões identificados e intervenções eficazes',
+    summary:'Pesquisa com 180 profissionais liberais brasileiras identificou principais gatilhos relacionados ao ambiente de trabalho. Sobrecarga e trabalho remoto foram os fatores de maior impacto.'},
+  {id:16,src:'harvard',topic:'pesquisa',isNew:false,isHot:false,rel:85,read:6,date:hAgo(60),
+    headline:'Treinamento de força supera aeróbico para emagrecimento em mulheres acima de 40 anos',
+    summary:'Estudo de 2 anos com 640 mulheres comparou modalidades de exercício. O treinamento de força mostrou maior preservação de massa magra e melhor adesão a longo prazo nessa faixa etária.'},
+];
+
+let activeTopic='todos', activeSrc='all', searchTerm='', sortMode='date', savedIds=new Set();
+
+function setTopic(t,el){activeTopic=t;document.querySelectorAll('.ttab').forEach(x=>x.classList.remove('active'));el.classList.add('active');applyFilters();}
+function applyFilters(){sortMode=document.getElementById('sort-select').value;searchTerm=document.getElementById('search-input').value.toLowerCase().trim();renderAll();}
+
+function getFiltered(){
+  return ARTICLES
+    .filter(a=>activeTopic==='todos'||a.topic===activeTopic)
+    .filter(a=>activeSrc==='all'||a.src===activeSrc)
+    .filter(a=>!searchTerm||a.headline.toLowerCase().includes(searchTerm)||a.summary.toLowerCase().includes(searchTerm))
+    .sort((a,b)=>{if(sortMode==='date')return b.date-a.date;if(sortMode==='relevance')return (b.isHot?1:0)-(a.isHot?1:0)||b.rel-a.rel;if(sortMode==='source')return a.src.localeCompare(b.src);return 0;});
+}
+
+function renderAll(){
+  const f=getFiltered();
+  renderStats(f);
+  renderFeed(f);
+  renderCounts();
+  renderSrcChips();
+  renderSidebar(f);
+}
+
+function renderStats(f){
+  document.getElementById('s-total').textContent=ARTICLES.length;
+  document.getElementById('s-sources').textContent=SOURCES.length;
+  document.getElementById('s-new').textContent=ARTICLES.filter(a=>a.isNew).length;
+  document.getElementById('s-hot').textContent=ARTICLES.filter(a=>a.isHot).length;
+  document.getElementById('result-info').innerHTML=`<strong>${f.length}</strong> de ${ARTICLES.length} artigos`;
+}
+
+function renderCounts(){
+  document.getElementById('cnt-todos').textContent=ARTICLES.length;
+  ['pesquisa','ferramentas','negocios','nutricao','ciencia','comportamento'].forEach(t=>{const el=document.getElementById(`cnt-${t}`);if(el)el.textContent=ARTICLES.filter(a=>a.topic===t).length;});
+}
+
+function renderFeed(f){
+  const col=document.getElementById('main-col');
+  if(!f.length){col.innerHTML=`<div style="text-align:center;padding:80px;color:var(--xs)"><div style="font-size:32px;opacity:.3;margin-bottom:10px">📭</div><div style="font-size:14px;color:var(--lo)">Nenhum artigo encontrado</div></div>`;return;}
+  col.innerHTML='';
+  col.insertAdjacentHTML('beforeend',buildFeatured(f[0]));
+  if(f.length>1){
+    const grid=document.createElement('div');grid.className='news-grid';
+    f.slice(1).forEach((a,i)=>{grid.insertAdjacentHTML('beforeend',buildCard(a,i));});
+    col.appendChild(grid);
+  }
+}
+
+function buildFeatured(a){
+  const tc=TOPIC_COLORS[a.topic]||'#60a5fa';const tl=TOPIC_LABELS[a.topic]||a.topic;
+  const src=SOURCES.find(s=>s.id===a.src)||SOURCES[0];
+  return `<div class="featured" onclick="openArt(${a.id})">
+    <div class="featured-body">
+      <div class="featured-eyebrow">
+        <span class="topic-pill" style="background:${tc}18;color:${tc}">${tl}</span>
+        ${a.isNew?`<span class="new-badge">● Novo</span>`:''}
+        ${a.isHot?`<span class="hot-badge">🔥 Em alta</span>`:''}
+      </div>
+      <div class="featured-title">${a.headline}</div>
+      <div class="featured-summary">${a.summary}</div>
+      <div class="featured-meta">
+        <div class="src-badge"><div class="src-fav">${src.emoji}</div>${src.name}</div>
+        <div class="pub-date">· ${relDate(a.date)}</div>
+        <div class="read-time">· ${a.read} min</div>
+        <button class="act-btn ${savedIds.has(a.id)?'saved':''}" style="margin-left:auto" onclick="toggleSave(${a.id},event)">${savedIds.has(a.id)?'★':'☆'}</button>
+      </div>
+    </div>
+    <div class="featured-visual"><div class="art-glyph">${src.emoji}</div><div class="art-overlay"></div></div>
+  </div>`;
+}
+
+function buildCard(a,i){
+  const tc=TOPIC_COLORS[a.topic]||'#60a5fa';const tl=TOPIC_LABELS[a.topic]||a.topic;
+  const src=SOURCES.find(s=>s.id===a.src)||SOURCES[0];
+  return `<div class="card" onclick="openArt(${a.id})" style="animation-delay:${i*.04}s">
+    <div class="card-bar" style="background:${tc}"></div>
+    <div class="card-body">
+      <div class="card-eyebrow">
+        <span class="topic-pill" style="background:${tc}18;color:${tc}">${tl}</span>
+        ${a.isNew?`<span class="new-badge">Novo</span>`:''}
+        ${a.isHot?`<span class="hot-badge">🔥</span>`:''}
+      </div>
+      <div class="card-title">${a.headline}</div>
+      <div class="card-summary">${a.summary}</div>
+      <div class="card-footer">
+        <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+          <div class="src-badge"><div class="src-fav">${src.emoji}</div><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${src.name}</span></div>
+          <div class="pub-date">${relDate(a.date)} · ${a.read} min</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <div class="rel-wrap"><div class="rel-track"><div class="rel-fill" style="width:${a.rel}%"></div></div><span class="rel-pct">${a.rel}%</span></div>
+          <div class="card-acts">
+            <button class="act-btn ${savedIds.has(a.id)?'saved':''}" onclick="toggleSave(${a.id},event)">${savedIds.has(a.id)?'★':'☆'}</button>
+            <button class="act-btn" onclick="shareArt(${a.id},event)">↗</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderSrcChips(){
+  const wrap=document.getElementById('src-chips');
+  let h=`<div style="display:flex;gap:5px;flex-wrap:nowrap;overflow-x:auto">`;
+  h+=`<div class="src-chip ${activeSrc==='all'?'active':''}" onclick="setSrc('all')">Todas as fontes</div>`;
+  SOURCES.forEach(s=>{const cnt=ARTICLES.filter(a=>a.src===s.id).length;h+=`<div class="src-chip ${activeSrc===s.id?'active':''}" onclick="setSrc('${s.id}')"><div class="src-dot" style="background:${s.color}"></div>${s.name}<span style="font-size:9px;color:var(--xs);font-family:'JetBrains Mono',monospace">${cnt}</span></div>`;});
+  h+=`</div>`;wrap.innerHTML=h;
+}
+
+function setSrc(id){activeSrc=id;renderAll();}
+
+function renderSidebar(f){
+  const tc={};f.forEach(a=>{tc[a.topic]=(tc[a.topic]||0)+1;});
+  const sorted=Object.entries(tc).sort((a,b)=>b[1]-a[1]);
+  document.getElementById('trending-list').innerHTML=sorted.map(([t,c],i)=>`
+    <div class="trend-item" onclick="setTopic('${t}',document.querySelector('[data-t=${t}]'))">
+      <div class="trend-rank">${i+1}</div>
+      <div class="trend-lbl">${TOPIC_LABELS[t]||t}</div>
+      <div class="trend-cnt">${c}</div>
+    </div>`).join('')||'<div style="font-size:11px;color:var(--xs);padding:8px 0">—</div>';
+
+  const sc={};f.forEach(a=>{sc[a.src]=(sc[a.src]||0)+1;});
+  document.getElementById('sources-list').innerHTML=SOURCES.map(s=>`
+    <div class="src-row" onclick="setSrc('${s.id}')">
+      <div class="src-row-fav">${s.emoji}</div>
+      <div class="src-row-name">${s.name}</div>
+      <div class="src-row-dot" style="background:${s.color}"></div>
+      <div class="src-row-cnt">${sc[s.id]||0}</div>
+    </div>`).join('');
+}
+
+function toggleSave(id,e){e.stopPropagation();if(savedIds.has(id)){savedIds.delete(id);showToast('Removido dos salvos','☆');}else{savedIds.add(id);showToast('Salvo!','★');}renderAll();}
+function openArt(id){const a=ARTICLES.find(x=>x.id===id);if(a)showToast(`${SOURCES.find(s=>s.id===a.src)?.name} →`,'↗');}
+function shareArt(id,e){e.stopPropagation();showToast('Link copiado!','✓');}
+
+function refreshFeeds(){
+  const btn=document.getElementById('refresh-btn');btn.classList.add('spinning');
+  setTimeout(()=>{btn.classList.remove('spinning');const n=new Date();document.getElementById('update-time').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;showToast('Feeds atualizados','✓');},800);
+}
+
+function relDate(d){const diff=Date.now()-d.getTime();const h=Math.floor(diff/3600000);const m=Math.floor(diff/60000);if(m<60)return `há ${m}min`;if(h<24)return `há ${h}h`;return `há ${Math.floor(h/24)}d`;}
+
+let tT;function showToast(msg,icon='✓'){document.getElementById('tm').textContent=msg;document.getElementById('ti').textContent=icon;const t=document.getElementById('toast');t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2600);}
+
+document.addEventListener('keydown',e=>{if(e.key==='r'&&!e.metaKey&&!e.ctrlKey&&!e.target.closest('input,textarea,select'))refreshFeeds();if((e.metaKey||e.ctrlKey)&&e.key==='f'){e.preventDefault();document.getElementById('search-input').focus();}});
+
+const n=new Date();document.getElementById('update-time').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+renderAll();
+</script>
+
+</body>
+</html>
