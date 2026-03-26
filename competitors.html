@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concorrentes — Contentos</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{color-scheme:dark}
+:root{
+  --bg:#080b12;--s1:#0d1120;--s2:#111626;--s3:#161c2e;--s4:#1c2236;--s5:#222840;
+  --b1:#1e2438;--b2:#252c42;--b3:#2e3650;
+  --hi:#eef0ff;--text:#bbbfd8;--lo:#6068a0;--xs:#3c4468;
+  --accent:#6c8ef5;--accent-hi:#8ba4ff;
+  --green:#34d399;--yellow:#fbbf24;--red:#f87171;
+  --violet:#a78bfa;--sky:#60a5fa;--teal:#2dd4bf;--orange:#fb923c;
+  --r:10px;--r-sm:6px;--r-lg:14px;
+}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--s5);border-radius:2px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes rowIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;background:rgba(8,11,18,.92);backdrop-filter:blur(20px) saturate(180%);border-bottom:1px solid var(–b1);display:flex;align-items:center;justify-content:space-between;padding:0 28px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.brand-mark{width:30px;height:30px;background:linear-gradient(135deg,var(–accent),#9b6dff);border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(108,142,245,.35)}
+.brand-mark svg{width:15px;height:15px}
+.brand-name{font-size:15px;font-weight:700;color:var(–hi);letter-spacing:-.02em}
+.nav-links{display:flex;align-items:center;background:var(–s3);border:1px solid var(–b1);border-radius:8px;padding:3px;gap:1px}
+.nav-link{padding:5px 14px;border-radius:6px;font-size:12.5px;font-weight:500;color:var(–lo);cursor:pointer;transition:all .15s;white-space:nowrap;text-decoration:none;display:flex;align-items:center;gap:5px}
+.nav-link:hover{color:var(–text)}.nav-link.active{background:var(–s5);color:var(–hi)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-avatar{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(–accent),var(–violet));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;cursor:pointer}
+
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:0 16px;height:34px;border-radius:var(–r-sm);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-primary{background:var(–accent);color:#fff;box-shadow:0 2px 8px rgba(108,142,245,.3)}
+.btn-primary:hover{background:var(–accent-hi);transform:translateY(-1px)}
+.btn-ghost{background:var(–s4);color:var(–text);border:1px solid var(–b2)}
+.btn-ghost:hover{border-color:var(–b3);color:var(–hi)}
+.btn-icon{width:30px;height:30px;padding:0;display:flex;align-items:center;justify-content:center;background:var(–s4);border:1px solid var(–b2);border-radius:var(–r-sm);color:var(–lo);cursor:pointer;transition:all .15s;flex-shrink:0}
+.btn-icon:hover{color:var(–text);border-color:var(–b3)}
+.btn-icon.danger:hover{color:var(–red);background:rgba(248,113,113,.08);border-color:rgba(248,113,113,.2)}
+
+/* CMDBAR */
+.cmdbar{background:var(–s1);border-bottom:1px solid var(–b1);padding:10px 28px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
+.search-field{display:flex;align-items:center;gap:8px;background:var(–s4);border:1px solid var(–b2);border-radius:var(–r-sm);padding:7px 12px;max-width:280px;flex:1;transition:border-color .15s,box-shadow .15s}
+.search-field:focus-within{border-color:rgba(108,142,245,.4);box-shadow:0 0 0 3px rgba(108,142,245,.07)}
+.search-field svg{color:var(–xs);flex-shrink:0}
+.search-field input{background:none;border:none;outline:none;color:var(–text);font-family:‘JetBrains Mono’,monospace;font-size:12px;width:100%}
+.search-field input::placeholder{color:var(–xs)}
+.filter-group{display:flex;gap:4px}
+.fbtn{display:flex;align-items:center;gap:5px;padding:6px 11px;border:1px solid var(–b2);border-radius:var(–r-sm);background:var(–s4);color:var(–lo);font-family:‘JetBrains Mono’,monospace;font-size:10px;font-weight:500;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;user-select:none}
+.fbtn:hover{color:var(–text);border-color:var(–b3)}.fbtn.on{background:rgba(108,142,245,.1);border-color:rgba(108,142,245,.3);color:var(–accent-hi)}
+.ndot{width:6px;height:6px;border-radius:50%}
+.cmdbar-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.sort-label{font-family:‘JetBrains Mono’,monospace;font-size:10px;color:var(–xs);letter-spacing:.04em}
+.refresh-btn{display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(–b2);border-radius:var(–r-sm);background:var(–s4);color:var(–lo);font-family:‘JetBrains Mono’,monospace;font-size:10px;font-weight:500;cursor:pointer;transition:all .15s;text-transform:uppercase;letter-spacing:.04em}
+.refresh-btn:hover{color:var(–text)}.refresh-btn.spinning svg{animation:spin .6s linear infinite}
+
+/* KPI STRIP */
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(–b1);position:relative;z-index:1}
+.kpi-item{padding:14px 22px;border-right:1px solid var(–b1);animation:fadeUp .4s ease both}
+.kpi-item:last-child{border-right:none}
+.kpi-item:nth-child(1){animation-delay:.04s}.kpi-item:nth-child(2){animation-delay:.08s}.kpi-item:nth-child(3){animation-delay:.12s}.kpi-item:nth-child(4){animation-delay:.16s}.kpi-item:nth-child(5){animation-delay:.2s}
+.kpi-lbl{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(–xs);margin-bottom:5px;font-family:‘JetBrains Mono’,monospace}
+.kpi-val{font-family:‘JetBrains Mono’,monospace;font-size:22px;font-weight:600;color:var(–hi);letter-spacing:-.02em;line-height:1}
+.kpi-sub{font-size:10.5px;color:var(–xs);margin-top:3px;font-family:‘JetBrains Mono’,monospace}
+.kpi-sub.up{color:var(–green)}.kpi-sub.down{color:var(–red)}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;position:relative;z-index:1}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead{position:sticky;top:56px;z-index:10;background:var(–s1)}
+th{padding:10px 16px;text-align:left;font-family:‘JetBrains Mono’,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(–xs);border-bottom:1px solid var(–b2);white-space:nowrap;cursor:pointer;user-select:none;transition:color .12s}
+th:hover{color:var(–text)}th.sorted{color:var(–accent-hi)}
+th.sorted-desc::after{content:’ ↓’;opacity:.6}th.sorted-asc::after{content:’ ↑’;opacity:.6}
+th:first-child{padding-left:28px;cursor:default}th:last-child{padding-right:28px;text-align:right;cursor:default}
+tbody tr{border-bottom:1px solid var(–b1);transition:background .1s;animation:rowIn .3s ease both}
+tbody tr:hover{background:rgba(255,255,255,.015)}
+tbody tr.pinned{background:rgba(108,142,245,.03)}
+td{padding:14px 16px;vertical-align:middle;white-space:nowrap}
+td:first-child{padding-left:28px}td:last-child{padding-right:28px}
+
+/* CELL COMPONENTS */
+.profile-cell{display:flex;align-items:center;gap:12px;min-width:200px}
+.avatar{width:38px;height:38px;border-radius:9px;background:var(–s4);border:1px solid var(–b3);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;position:relative;overflow:hidden}
+.avatar::after{content:’’;position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06),transparent 60%)}
+.profile-name{font-weight:600;color:var(–hi);font-size:13px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.profile-handle{font-family:‘JetBrains Mono’,monospace;font-size:10px;color:var(–xs);margin-top:1px}
+.pin-btn{background:none;border:none;color:var(–b3);cursor:pointer;font-size:14px;padding:2px 4px;border-radius:4px;transition:color .12s;margin-left:auto}
+.pin-btn:hover{color:var(–yellow)}.pin-btn.on{color:var(–yellow)}
+
+.nets-cell{display:flex;gap:3px;min-width:120px}
+.net-tag{font-family:‘JetBrains Mono’,monospace;font-size:9px;font-weight:700;padding:3px 7px;border-radius:4px;text-transform:uppercase;letter-spacing:.04em}
+
+.delta{display:inline-flex;align-items:center;gap:3px;font-family:‘JetBrains Mono’,monospace;font-size:10.5px;font-weight:600;padding:3px 9px;border-radius:20px}
+.delta.up{background:rgba(52,211,153,.1);color:var(–green)}
+.delta.down{background:rgba(248,113,113,.1);color:var(–red)}
+.delta.neu{background:rgba(96,104,160,.1);color:var(–lo)}
+
+.mono-val{font-family:‘JetBrains Mono’,monospace;font-size:13px;color:var(–hi);font-weight:500}
+.mono-sub{font-family:‘JetBrains Mono’,monospace;font-size:10px;color:var(–xs);margin-top:1px}
+
+.eng-bar-wrap{width:72px;height:3px;background:var(–s5);border-radius:2px;overflow:hidden;margin-top:5px}
+.eng-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(–accent),var(–accent-hi))}
+
+.score-val{font-family:‘JetBrains Mono’,monospace;font-size:14px;font-weight:600;letter-spacing:-.02em;text-align:right}
+.score-track{width:44px;height:3px;background:var(–s5);border-radius:2px;margin-top:5px;margin-left:auto;overflow:hidden}
+.score-fill{height:100%;border-radius:2px}
+
+.spark-canvas{display:block}
+
+.post-preview{font-size:11.5px;color:var(–text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:220px}
+.post-preview-meta{font-family:‘JetBrains Mono’,monospace;font-size:9.5px;color:var(–xs);margin-top:2px}
+
+.actions-cell{display:flex;justify-content:flex-end;gap:4px}
+
+/* EMPTY */
+.empty-row td{padding:64px 28px;text-align:center}
+.empty-icon{font-size:32px;margin-bottom:12px;opacity:.3}
+.empty-title{font-size:15px;color:var(–text);margin-bottom:5px;font-weight:500}
+.empty-sub{font-size:12px;color:var(–lo)}
+
+/* DRAWER */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:200;opacity:0;pointer-events:none;transition:opacity .2s}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+.drawer{position:fixed;right:0;top:0;bottom:0;width:440px;background:var(–s1);border-left:1px solid var(–b2);z-index:201;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.drawer-overlay.open .drawer{transform:translateX(0)}
+.drawer-hdr{padding:20px 22px 14px;border-bottom:1px solid var(–b1);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.drawer-profile{display:flex;align-items:center;gap:14px}
+.drawer-avatar{width:46px;height:46px;border-radius:10px;background:var(–s5);border:1px solid var(–b3);display:flex;align-items:center;justify-content:center;font-size:22px}
+.drawer-name{font-family:‘JetBrains Mono’,monospace;font-size:15px;font-weight:600;color:var(–hi)}
+.drawer-handle{font-family:‘JetBrains Mono’,monospace;font-size:10.5px;color:var(–xs);margin-top:2px}
+.drawer-close{width:30px;height:30px;border-radius:6px;border:1px solid var(–b2);background:var(–s4);color:var(–lo);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .12s}
+.drawer-close:hover{color:var(–hi)}
+.drawer-body{flex:1;overflow-y:auto;padding:18px 22px;display:flex;flex-direction:column;gap:18px}
+.drawer-sect-title{font-family:‘JetBrains Mono’,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(–xs);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(–b1)}
+.drawer-kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.dkpi{background:var(–s4);border:1px solid var(–b2);border-radius:var(–r);padding:12px}
+.dkpi-lbl{font-family:‘JetBrains Mono’,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(–xs);margin-bottom:4px}
+.dkpi-val{font-family:‘JetBrains Mono’,monospace;font-size:16px;font-weight:600;color:var(–hi)}
+.dpost{background:var(–s4);border:1px solid var(–b2);border-radius:var(–r);padding:12px 14px;margin-bottom:8px}
+.dpost-meta{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.dpost-text{font-size:12.5px;line-height:1.55;color:var(–text);margin-bottom:7px}
+.dpost-stats{display:flex;gap:14px;font-family:‘JetBrains Mono’,monospace;font-size:10px;color:var(–xs)}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal{width:100%;max-width:470px;background:var(–s2);border:1px solid var(–b3);border-radius:var(–r-lg);box-shadow:0 32px 80px rgba(0,0,0,.65);transform:translateY(16px) scale(.97);transition:transform .3s cubic-bezier(.34,1.56,.64,1);overflow:hidden}
+.modal-bg.open .modal{transform:translateY(0) scale(1)}
+.modal-hdr{padding:22px 22px 0;display:flex;align-items:flex-start;justify-content:space-between}
+.modal-title{font-size:18px;font-weight:700;color:var(–hi);letter-spacing:-.02em}
+.modal-sub{font-size:12px;color:var(–lo);margin-top:3px}
+.modal-close{width:30px;height:30px;border-radius:7px;background:var(–s4);border:1px solid var(–b2);color:var(–lo);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .12s}
+.modal-close:hover{color:var(–hi)}
+.modal-body{padding:18px 22px;display:flex;flex-direction:column;gap:14px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(–lo)}
+.field input,.field select{background:var(–s4);border:1px solid var(–b2);border-radius:var(–r-sm);color:var(–text);font-family:inherit;font-size:13px;padding:9px 12px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%;-webkit-appearance:none}
+.field input:focus,.field select:focus{border-color:rgba(108,142,245,.45);box-shadow:0 0 0 3px rgba(108,142,245,.08)}
+.field input::placeholder{color:var(–xs)}.field select option{background:var(–s4)}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.np-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.np-opt{display:flex;flex-direction:column;align-items:center;gap:4px;padding:9px 6px;border:1px solid var(–b1);border-radius:var(–r-sm);background:var(–s3);cursor:pointer;transition:all .12s;font-size:9.5px;color:var(–xs);font-weight:600;text-transform:uppercase;letter-spacing:.04em;user-select:none}
+.np-opt:hover{border-color:var(–b2);color:var(–lo)}.np-opt.on{border-color:rgba(108,142,245,.4);background:rgba(108,142,245,.08);color:var(–accent-hi)}
+.np-em{font-size:16px}
+.modal-footer{padding:0 22px 22px;display:flex;gap:8px;justify-content:flex-end}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:var(–s3);border:1px solid var(–b3);border-radius:30px;padding:10px 20px;font-family:‘JetBrains Mono’,monospace;font-size:11.5px;color:var(–text);display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:600;white-space:nowrap;letter-spacing:.02em}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:1100px){.kpi-strip{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.kpi-strip{grid-template-columns:repeat(2,1fr)}.drawer{width:100%}}
+</style>
+
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <div class="brand-mark"><svg viewBox="0 0 15 15" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="2.5" width="10" height="10" rx="2.5"/><circle cx="7.5" cy="7.5" r="2"/><circle cx="11" cy="4" r=".8" fill="white" stroke="none"/></svg></div>
+    <div class="brand-name">Contentos</div>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" href="instagram-dashboard.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="2.5"/><circle cx="6.5" cy="6.5" r="2"/><circle cx="10" cy="3" r=".6" fill="currentColor" stroke="none"/></svg>Conteúdo</a>
+    <a class="nav-link" href="analytics.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><polyline points="1,10 4,6 7,8 12,2"/></svg>Analytics</a>
+    <a class="nav-link" href="calendar.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="2.5" width="10" height="9" rx="1.5"/><line x1="4" y1="1.5" x2="4" y2="3.5"/><line x1="9" y1="1.5" x2="9" y2="3.5"/><line x1="1.5" y1="5.5" x2="11.5" y2="5.5"/></svg>Calendário</a>
+    <a class="nav-link active" href="competitors.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="4.5" cy="4.5" r="2.5"/><circle cx="9.5" cy="8" r="2.5"/></svg>Concorrentes</a>
+    <a class="nav-link" href="news.html"><svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="1.5" y="1.5" width="10" height="10" rx="1.5"/><line x1="4" y1="5" x2="9" y2="5"/><line x1="4" y1="7.5" x2="9" y2="7.5"/><line x1="4" y1="10" x2="7" y2="10"/></svg>Notícias</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn btn-primary" onclick="openModal()">
+      <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="5.5" y1="1" x2="5.5" y2="10"/><line x1="1" y1="5.5" x2="10" y2="5.5"/></svg>
+      Adicionar
+    </button>
+    <div class="nav-avatar">N</div>
+  </div>
+</nav>
+
+<div class="cmdbar">
+  <div class="search-field">
+    <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="5.5" cy="5.5" r="4"/><line x1="9" y1="9" x2="12" y2="12"/></svg>
+    <input type="text" id="search-input" placeholder="Buscar concorrente..." oninput="applyFilters()">
+  </div>
+  <div class="filter-group" id="net-filters">
+    <button class="fbtn on" data-net="all" onclick="setNet('all',this)">Todas as redes</button>
+    <button class="fbtn" data-net="instagram" onclick="setNet('instagram',this)"><div class="ndot" style="background:#e8518a"></div>Instagram</button>
+    <button class="fbtn" data-net="youtube"   onclick="setNet('youtube',this)"><div class="ndot" style="background:#e84040"></div>YouTube</button>
+    <button class="fbtn" data-net="tiktok"    onclick="setNet('tiktok',this)"><div class="ndot" style="background:var(--violet)"></div>TikTok</button>
+    <button class="fbtn" data-net="linkedin"  onclick="setNet('linkedin',this)"><div class="ndot" style="background:var(--teal)"></div>LinkedIn</button>
+  </div>
+  <div class="cmdbar-right">
+    <span class="sort-label" id="sort-label-text">Ordenado por Score ↓</span>
+    <button class="refresh-btn" id="refresh-btn" onclick="refreshAll()">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 2A5.5 5.5 0 1 0 11 6.5"/><polyline points="11,1 11,4 8,4"/></svg>
+      Atualizar
+    </button>
+  </div>
+</div>
+
+<div class="kpi-strip">
+  <div class="kpi-item"><div class="kpi-lbl">Concorrentes</div><div class="kpi-val" id="kpi-total">7</div><div class="kpi-sub">monitorados</div></div>
+  <div class="kpi-item"><div class="kpi-lbl">Total Seguidores</div><div class="kpi-val" id="kpi-fol">—</div><div class="kpi-sub up" id="kpi-fol-sub">combinado</div></div>
+  <div class="kpi-item"><div class="kpi-lbl">Eng. Médio</div><div class="kpi-val" id="kpi-eng">—</div><div class="kpi-sub" id="kpi-eng-sub">vs. grupo</div></div>
+  <div class="kpi-item"><div class="kpi-lbl">Posts / Semana</div><div class="kpi-val" id="kpi-freq">—</div><div class="kpi-sub">média</div></div>
+  <div class="kpi-item"><div class="kpi-lbl">Maior Crescimento</div><div class="kpi-val" id="kpi-top">—</div><div class="kpi-sub up" id="kpi-top-sub">este mês</div></div>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Perfil</th>
+        <th>Redes</th>
+        <th onclick="srt('followers')">Seguidores</th>
+        <th onclick="srt('growth')">Crescimento</th>
+        <th onclick="srt('engagement')">Engajamento</th>
+        <th onclick="srt('frequency')">Frequência</th>
+        <th>Tendência 30d</th>
+        <th onclick="srt('lastPost')">Último post</th>
+        <th onclick="srt('score')">Score</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<!-- DRAWER -->
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="handleDO(event)">
+  <div class="drawer">
+    <div class="drawer-hdr">
+      <div class="drawer-profile">
+        <div class="drawer-avatar" id="d-av">—</div>
+        <div><div class="drawer-name" id="d-name">—</div><div class="drawer-handle" id="d-handle">—</div></div>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()">✕</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+
+<div class="modal-bg" id="modal-bg" onclick="handleMO(event)">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div><div class="modal-title">Adicionar concorrente</div><div class="modal-sub">Métricas simuladas geradas automaticamente</div></div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field"><label>Nome / Marca</label><input type="text" id="f-name" placeholder="Ex: Nutri Comportamental"></div>
+        <div class="field"><label>Handle / @</label><input type="text" id="f-handle" placeholder="@usuario"></div>
+      </div>
+      <div class="field"><label>Redes monitoradas</label>
+        <div class="np-grid" id="np-grid">
+          <div class="np-opt on" data-np="instagram" onclick="tNP('instagram',this)"><span class="np-em">📷</span>Instagram</div>
+          <div class="np-opt" data-np="youtube"   onclick="tNP('youtube',this)"><span class="np-em">▶️</span>YouTube</div>
+          <div class="np-opt" data-np="tiktok"    onclick="tNP('tiktok',this)"><span class="np-em">🎵</span>TikTok</div>
+          <div class="np-opt" data-np="facebook"  onclick="tNP('facebook',this)"><span class="np-em">👥</span>Facebook</div>
+          <div class="np-opt" data-np="linkedin"  onclick="tNP('linkedin',this)"><span class="np-em">💼</span>LinkedIn</div>
+          <div class="np-opt" data-np="twitter"   onclick="tNP('twitter',this)"><span class="np-em">🐦</span>X/Twitter</div>
+          <div class="np-opt" data-np="pinterest" onclick="tNP('pinterest',this)"><span class="np-em">📌</span>Pinterest</div>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Nicho</label>
+          <select id="f-niche"><option value="nutrição">Nutrição</option><option value="saúde">Saúde & Bem-estar</option><option value="fitness">Fitness</option><option value="psicologia">Psicologia</option><option value="lifestyle">Lifestyle</option></select>
+        </div>
+        <div class="field"><label>Emoji</label><input type="text" id="f-emoji" placeholder="🌿" maxlength="2" style="font-size:20px;text-align:center"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="addComp()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toast-icon">✓</span><span id="toast-msg">—</span></div>
+
+<script>
+const NC={instagram:{label:'IG',color:'#e8518a',emoji:'📷',full:'Instagram'},youtube:{label:'YT',color:'#e84040',emoji:'▶️',full:'YouTube'},tiktok:{label:'TT',color:'#a78bfa',emoji:'🎵',full:'TikTok'},facebook:{label:'FB',color:'#4a85e8',emoji:'👥',full:'Facebook'},linkedin:{label:'LI',color:'#34c4a0',emoji:'💼',full:'LinkedIn'},twitter:{label:'TW',color:'#4ab8e8',emoji:'🐦',full:'X/Twitter'},pinterest:{label:'PIN',color:'#e86040',emoji:'📌',full:'Pinterest'}};
+const POSTS=['5 hábitos que impedem emagrecimento definitivo','A relação entre cortisol e peso que ninguém explica','Por que dietas restritivas sempre falham (ciência)','Mindful eating na prática: guia para iniciantes','O que comer antes de dormir sem culpa','Emagrecimento sustentável vs rápido','Como a ansiedade interfere nos resultados','3 sinais de que sua dieta está te prejudicando','A psicologia por trás do comer emocional','Receita anti-inflamatória pós-treino'];
+
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1)+a)}
+function rndF(a,b,d=1){return parseFloat((Math.random()*(b-a)+a).toFixed(d))}
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function series(base,len=30,vol=.04){let v=base;return Array.from({length:len},()=>{v=v*(1+(Math.random()-.48)*vol);return Math.max(0,Math.round(v));})}
+
+function genComp(ov={}){
+  const fb=ov.followers||rnd(5000,200000);
+  const gr=ov.growth??rndF(-2,18);
+  const en=ov.engagement??rndF(1.2,11.5);
+  const fr=ov.frequency??rndF(.8,8);
+  const nets=ov.networks||['instagram','tiktok','facebook','youtube'].filter(()=>Math.random()>.45).slice(0,rnd(1,4));
+  if(!nets.length)nets.push('instagram');
+  return {
+    id:ov.id||Date.now()+Math.random(),
+    name:ov.name||'Concorrente',handle:ov.handle||'@handle',
+    emoji:ov.emoji||'🏷',niche:ov.niche||'nutrição',
+    networks:nets,followers:fb,
+    sparkData:ov.sparkData||series(fb,30,.035+Math.abs(gr)*.002),
+    growth:gr,engagement:en,frequency:fr,
+    score:Math.round((en*8)+(gr*3)+(fr*2)+rnd(0,15)),
+    lastPost:rnd(0,7),pinned:false,
+    recentPosts:Array.from({length:3},()=>({text:pick(POSTS),network:pick(nets),likes:rnd(80,50000),comments:rnd(8,3000),saves:rnd(40,10000),daysAgo:rnd(0,6)})),
+    ...ov
+  };
+}
+
+let comps=[
+  genComp({name:'Dra. Ana Nutrição',handle:'@dra.ana.nutri',emoji:'🌿',networks:['instagram','youtube','tiktok'],followers:84200,growth:2.3,engagement:3.1,frequency:5.2,score:48}),
+  genComp({name:'Nutri Comportamental',handle:'@nutricomport',emoji:'🧠',networks:['instagram','tiktok','linkedin'],followers:31700,growth:5.6,engagement:7.8,frequency:4.1,score:72}),
+  genComp({name:'Saúde & Bem-Estar',handle:'@saudebemestar',emoji:'💚',networks:['instagram','facebook','youtube'],followers:156000,growth:-0.8,engagement:1.9,frequency:9.2,score:35}),
+  genComp({name:'Emagreça com Ciência',handle:'@emagciencia',emoji:'🔬',networks:['instagram','youtube'],followers:47300,growth:3.1,engagement:5.2,frequency:5.8,score:61}),
+  genComp({name:'Viver Leve',handle:'@viverleve.of',emoji:'☀️',networks:['instagram','tiktok','pinterest'],followers:22100,growth:8.4,engagement:9.1,frequency:3.4,score:79}),
+  genComp({name:'NutriMindset',handle:'@nutrimindset',emoji:'🎯',networks:['instagram','linkedin','youtube'],followers:18400,growth:11.2,engagement:8.4,frequency:4.6,score:83}),
+  genComp({name:'Dr. Felipe Saúde',handle:'@drfelipesaude',emoji:'👨‍⚕️',networks:['youtube','instagram','facebook'],followers:94000,growth:1.4,engagement:2.8,frequency:6.1,score:42}),
+];
+
+let nextId=10,srchTerm='',activeNet='all',sortKey='score',sortDir='desc',pickedNets=new Set(['instagram']);
+
+function getFiltered(){
+  return comps
+    .filter(c=>!srchTerm||c.name.toLowerCase().includes(srchTerm)||c.handle.toLowerCase().includes(srchTerm))
+    .filter(c=>activeNet==='all'||c.networks.includes(activeNet))
+    .sort((a,b)=>{let va=a[sortKey],vb=b[sortKey];if(sortKey==='name'){va=a.name.toLowerCase();vb=b.name.toLowerCase();}if(sortKey==='lastPost'){va=-a.lastPost;vb=-b.lastPost;}if(typeof va==='string')return sortDir==='asc'?va.localeCompare(vb):vb.localeCompare(va);return sortDir==='asc'?va-vb:vb-va;})
+    .sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+}
+
+function applyFilters(){srchTerm=document.getElementById('search-input').value.toLowerCase();renderTable();}
+function setNet(n,el){activeNet=n;document.querySelectorAll('[data-net]').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderTable();}
+function srt(k){
+  if(sortKey===k)sortDir=sortDir==='desc'?'asc':'desc';else{sortKey=k;sortDir='desc';}
+  document.querySelectorAll('th').forEach(t=>{t.classList.remove('sorted','sorted-asc','sorted-desc');});
+  const cols={followers:2,growth:3,engagement:4,frequency:5,lastPost:7,score:8};
+  const idx=cols[k];
+  if(idx!==undefined){const th=document.querySelectorAll('th')[idx];th.classList.add('sorted',sortDir==='asc'?'sorted-asc':'sorted-desc');}
+  document.getElementById('sort-label-text').textContent=`Ordenado por ${k} ${sortDir==='desc'?'↓':'↑'}`;
+  renderTable();
+}
+
+function renderTable(){
+  const f=getFiltered();
+  const tbody=document.getElementById('tbody');
+  tbody.innerHTML='';
+  if(!f.length){tbody.innerHTML=`<tr class="empty-row"><td colspan="10"><div class="empty-icon">📡</div><div class="empty-title">Nenhum sinal detectado</div><div class="empty-sub">Adicione concorrentes para começar o rastreamento</div></td></tr>`;return;}
+  const maxEng=Math.max(...f.map(c=>c.engagement));
+  const maxScore=Math.max(...f.map(c=>c.score));
+  f.forEach((c,i)=>{
+    const tr=document.createElement('tr');
+    if(c.pinned)tr.classList.add('pinned');
+    tr.style.animationDelay=`${i*.04}s`;
+    const sc=c.score;const scColor=sc>=70?'var(--green)':sc>=45?'var(--yellow)':'var(--red)';
+    tr.innerHTML=`
+      <td><div class="profile-cell">
+        <div class="avatar">${c.emoji}</div>
+        <div><div class="profile-name">${c.name}</div><div class="profile-handle">${c.handle}</div></div>
+        <button class="pin-btn ${c.pinned?'on':''}" onclick="tPin('${c.id}',event)">${c.pinned?'★':'☆'}</button>
+      </div></td>
+      <td><div class="nets-cell">${c.networks.slice(0,4).map(n=>{const nc=NC[n]||{};return `<span class="net-tag" style="background:${nc.color}18;color:${nc.color}">${nc.label}</span>`;}).join('')}${c.networks.length>4?`<span style="font-size:9px;color:var(--xs);font-family:'JetBrains Mono',monospace">+${c.networks.length-4}</span>`:''}</div></td>
+      <td><div class="mono-val">${fmtN(c.followers)}</div><div class="mono-sub">${c.networks.length} rede${c.networks.length>1?'s':''}</div></td>
+      <td><span class="delta ${c.growth>0?'up':c.growth<-.5?'down':'neu'}">${c.growth>0?'↑ +':'↓ '}${Math.abs(c.growth).toFixed(1)}%/mês</span></td>
+      <td>
+        <div class="mono-val">${c.engagement.toFixed(1)}%</div>
+        <div class="eng-bar-wrap"><div class="eng-bar-fill" style="width:${(c.engagement/maxEng*100).toFixed(0)}%"></div></div>
+      </td>
+      <td><div class="mono-val">${c.frequency.toFixed(1)}x</div><div class="mono-sub">por semana</div></td>
+      <td><canvas class="spark-canvas" id="sp-${c.id}" width="100" height="36"></canvas></td>
+      <td><div class="mono-val">${c.lastPost===0?'hoje':`há ${c.lastPost}d`}</div></td>
+      <td>
+        <div class="score-val" style="color:${scColor}">${c.score}</div>
+        <div class="score-track"><div class="score-fill" style="width:${c.score}%;background:${scColor}"></div></div>
+      </td>
+      <td><div class="actions-cell">
+        <button class="btn-icon" onclick="openDrawer('${c.id}')" title="Ver detalhes"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="6" cy="6" r="4.5"/><line x1="6" y1="3.5" x2="6" y2="6.5"/><circle cx="6" cy="8" r=".5" fill="currentColor" stroke="none"/></svg></button>
+        <button class="btn-icon danger" onclick="rmComp('${c.id}')" title="Remover"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="1" y1="1" x2="9" y2="9"/><line x1="9" y1="1" x2="1" y2="9"/></svg></button>
+      </div></td>`;
+    tbody.appendChild(tr);
+  });
+  requestAnimationFrame(()=>f.forEach(c=>drawSparkline(`sp-${c.id}`,c.sparkData,c.growth)));
+  updateKPIs(f);
+}
+
+function drawSparkline(id,data,growth,W=100,H=36){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const ctx=canvas.getContext('2d');const dpr=window.devicePixelRatio||1;
+  canvas.width=W*dpr;canvas.height=H*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
+  if(!data||data.length<2)return;
+  const min=Math.min(...data),max=Math.max(...data),range=max-min||1;
+  const pts=data.map((v,i)=>({x:(i/(data.length-1))*W,y:H-5-((v-min)/range)*(H-10)}));
+  const color=growth>0?'#34d399':growth<-.5?'#f87171':'#6068a0';
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,color+'35');g.addColorStop(1,color+'00');
+  ctx.beginPath();ctx.moveTo(pts[0].x,H);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,H);ctx.closePath();ctx.fillStyle=g;ctx.fill();
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=1;i<pts.length-1;i++){const cx=(pts[i].x+pts[i+1].x)/2,cy=(pts[i].y+pts[i+1].y)/2;ctx.quadraticCurveTo(pts[i].x,pts[i].y,cx,cy);}
+  ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();
+  const last=pts[pts.length-1];ctx.beginPath();ctx.arc(last.x,last.y,3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+}
+
+function drawSparklineLG(id,data,growth){
+  const canvas=document.getElementById(id);if(!canvas)return;
+  const W=canvas.parentElement.offsetWidth-28,H=80;const dpr=window.devicePixelRatio||1;
+  canvas.width=W*dpr;canvas.height=H*dpr;canvas.style.width=W+'px';canvas.style.height=H+'px';
+  const ctx=canvas.getContext('2d');ctx.scale(dpr,dpr);ctx.clearRect(0,0,W,H);
+  if(!data||data.length<2)return;
+  const min=Math.min(...data),max=Math.max(...data),range=max-min||1;const pad=10;
+  const pts=data.map((v,i)=>({x:(i/(data.length-1))*W,y:H-pad-((v-min)/range)*(H-pad*2)}));
+  const color=growth>0?'#34d399':growth<-.5?'#f87171':'#6068a0';
+  ctx.strokeStyle='rgba(255,255,255,.04)';ctx.lineWidth=1;
+  [.25,.5,.75].forEach(r=>{const y=H-pad-r*(H-pad*2);ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();});
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,color+'35');g.addColorStop(1,color+'00');
+  ctx.beginPath();ctx.moveTo(pts[0].x,H);pts.forEach(p=>ctx.lineTo(p.x,p.y));ctx.lineTo(pts[pts.length-1].x,H);ctx.closePath();ctx.fillStyle=g;ctx.fill();
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);for(let i=1;i<pts.length-1;i++){const cx=(pts[i].x+pts[i+1].x)/2,cy=(pts[i].y+pts[i+1].y)/2;ctx.quadraticCurveTo(pts[i].x,pts[i].y,cx,cy);}
+  ctx.lineTo(pts[pts.length-1].x,pts[pts.length-1].y);ctx.strokeStyle=color;ctx.lineWidth=2;ctx.stroke();
+  const last=pts[pts.length-1];ctx.beginPath();ctx.arc(last.x,last.y,4,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+  ctx.font=`${9*dpr}px "JetBrains Mono"`;ctx.fillStyle='#3c4468';ctx.textAlign='left';ctx.fillText(fmtN(min),4,H-2);ctx.textAlign='right';ctx.fillText(fmtN(max),W-4,pad+4);
+}
+
+function updateKPIs(f){
+  const all=f.length?f:comps;
+  document.getElementById('kpi-total').textContent=comps.length;
+  document.getElementById('kpi-fol').textContent=fmtN(all.reduce((s,c)=>s+c.followers,0));
+  const avgE=(all.reduce((s,c)=>s+c.engagement,0)/all.length).toFixed(1);
+  document.getElementById('kpi-eng').textContent=avgE+'%';
+  const avgF=(all.reduce((s,c)=>s+c.frequency,0)/all.length).toFixed(1);
+  document.getElementById('kpi-freq').textContent=avgF+'x';
+  const top=[...all].sort((a,b)=>b.growth-a.growth)[0];
+  document.getElementById('kpi-top').textContent=top?top.name.split(' ')[0]:'—';
+  document.getElementById('kpi-top-sub').textContent=top?`↑ +${top.growth.toFixed(1)}%/mês`:'—';
+}
+
+function tPin(id,e){e.stopPropagation();const c=comps.find(x=>String(x.id)===String(id));if(c){c.pinned=!c.pinned;renderTable();}}
+function rmComp(id){comps=comps.filter(c=>String(c.id)!==String(id));renderTable();showToast('Removido','🗑');}
+
+function refreshAll(){const btn=document.getElementById('refresh-btn');btn.classList.add('spinning');comps.forEach(c=>{c.sparkData=series(c.followers,30,.035+Math.abs(c.growth)*.002);c.growth=rndF(-2,14);c.engagement=Math.max(.5,c.engagement+rndF(-.5,.5));c.frequency=Math.max(.5,c.frequency+rndF(-.3,.3));c.score=Math.round((c.engagement*8)+(c.growth*3)+(c.frequency*2)+rnd(0,15));});renderTable();setTimeout(()=>btn.classList.remove('spinning'),700);showToast('Atualizado','↺');}
+
+function openDrawer(id){const c=comps.find(x=>String(x.id)===String(id));if(!c)return;
+  document.getElementById('d-av').textContent=c.emoji;document.getElementById('d-name').textContent=c.name;document.getElementById('d-handle').textContent=c.handle+' · '+c.niche;
+  document.getElementById('drawer-body').innerHTML=`
+    <div><div class="drawer-sect-title">Métricas</div><div class="drawer-kpi-grid">
+      <div class="dkpi"><div class="dkpi-lbl">Seguidores</div><div class="dkpi-val">${fmtN(c.followers)}</div></div>
+      <div class="dkpi"><div class="dkpi-lbl">Crescimento</div><div class="dkpi-val" style="color:${c.growth>0?'var(--green)':'var(--red)'}">${c.growth>0?'+':''}${c.growth.toFixed(1)}%</div></div>
+      <div class="dkpi"><div class="dkpi-lbl">Engajamento</div><div class="dkpi-val">${c.engagement.toFixed(1)}%</div></div>
+      <div class="dkpi"><div class="dkpi-lbl">Posts/sem.</div><div class="dkpi-val">${c.frequency.toFixed(1)}x</div></div>
+      <div class="dkpi"><div class="dkpi-lbl">Redes</div><div class="dkpi-val">${c.networks.length}</div></div>
+      <div class="dkpi"><div class="dkpi-lbl">Score</div><div class="dkpi-val" style="color:${c.score>=70?'var(--green)':c.score>=45?'var(--yellow)':'var(--red)'}">${c.score}</div></div>
+    </div></div>
+    <div><div class="drawer-sect-title">Redes monitoradas</div><div style="display:flex;gap:6px;flex-wrap:wrap">${c.networks.map(n=>{const nc=NC[n]||{};return `<span class="net-tag" style="background:${nc.color}18;color:${nc.color};padding:5px 12px;font-size:11px">${nc.emoji} ${nc.full}</span>`;}).join('')}</div></div>
+    <div><div class="drawer-sect-title">Posts recentes</div>${c.recentPosts.map(p=>{const nc=NC[p.network]||{};return `<div class="dpost"><div class="dpost-meta"><span class="net-tag" style="background:${nc.color}18;color:${nc.color};font-size:9px">${nc.label}</span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--xs)">${p.daysAgo===0?'hoje':`há ${p.daysAgo}d`}</span></div><div class="dpost-text">${p.text}</div><div class="dpost-stats"><span>❤️ ${fmtN(p.likes)}</span><span>💬 ${fmtN(p.comments)}</span><span>🔖 ${fmtN(p.saves)}</span></div></div>`;}).join('')}</div>
+    <div><div class="drawer-sect-title">Tendência de seguidores (30d)</div><div style="background:var(--s4);border:1px solid var(--b2);border-radius:var(--r);padding:14px"><canvas id="sp-lg" width="400" height="80"></canvas></div></div>`;
+  document.getElementById('drawer-overlay').classList.add('open');
+  requestAnimationFrame(()=>drawSparklineLG('sp-lg',c.sparkData,c.growth));
+}
+function closeDrawer(){document.getElementById('drawer-overlay').classList.remove('open');}
+function handleDO(e){if(e.target===document.getElementById('drawer-overlay'))closeDrawer();}
+
+function openModal(){pickedNets=new Set(['instagram']);document.querySelectorAll('.np-opt').forEach(o=>o.classList.toggle('on',o.dataset.np==='instagram'));document.getElementById('f-name').value='';document.getElementById('f-handle').value='';document.getElementById('f-emoji').value='';document.getElementById('modal-bg').classList.add('open');setTimeout(()=>document.getElementById('f-name').focus(),200);}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+function handleMO(e){if(e.target===document.getElementById('modal-bg'))closeModal();}
+function tNP(n,el){if(pickedNets.has(n)){if(pickedNets.size===1)return;pickedNets.delete(n);el.classList.remove('on');}else{pickedNets.add(n);el.classList.add('on');}}
+function addComp(){const name=document.getElementById('f-name').value.trim();if(!name){document.getElementById('f-name').style.borderColor='rgba(248,113,113,.6)';setTimeout(()=>document.getElementById('f-name').style.borderColor='',1200);return;}const handle=document.getElementById('f-handle').value.trim();const emoji=document.getElementById('f-emoji').value.trim()||'🏷';const niche=document.getElementById('f-niche').value;const c=genComp({id:nextId++,name,handle:handle.startsWith('@')?handle:'@'+(handle||name.toLowerCase().replace(/\s+/g,'')),emoji,niche,networks:[...pickedNets]});comps.unshift(c);closeModal();renderTable();showToast(`${name} adicionado`,'✓');}
+
+function fmtN(n){if(n>=1e6)return (n/1e6).toFixed(1)+'M';if(n>=1e3)return (n/1e3).toFixed(1)+'k';return String(n);}
+let tT;function showToast(msg,icon='✓'){document.getElementById('toast-msg').textContent=msg;document.getElementById('toast-icon').textContent=icon;const t=document.getElementById('toast');t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2600);}
+
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDrawer();}if((e.metaKey||e.ctrlKey)&&e.key==='Enter'&&document.getElementById('modal-bg').classList.contains('open'))addComp();if(e.key==='a'&&!e.metaKey&&!e.ctrlKey&&!e.target.closest('input,textarea,select'))openModal();});
+
+srt('score');
+</script>
+
+</body>
+</html>
